@@ -3,6 +3,7 @@ import Index from "./pages/Index.jsx";
 import About from "./pages/About.jsx";
 import Recognitions from "./pages/Recognitions.jsx";
 import Academics from "./pages/Academics.jsx";
+import ProgramDetail from "./pages/ProgramDetail.jsx";
 import Student from "./pages/student/Student.jsx";
 import Policies from "./pages/student/Policies.jsx";
 import Requirements from "./pages/student/Requirements.jsx";
@@ -21,6 +22,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/recognitions" element={<Recognitions />} />
         <Route path="/academics" element={<Academics />} />
+        <Route path="/academics/:programId" element={<ProgramDetail />} />
         <Route path="/student" element={<Student />} />
         <Route path="/student/policies" element={<Policies />} />
         <Route path="/student/requirements" element={<Requirements />} />

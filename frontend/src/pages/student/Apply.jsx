@@ -3,11 +3,23 @@ import Layout from "@/components/layout/Layout";
 import PageHero from "@/components/shared/PageHero";
 import { CheckCircle2 } from "lucide-react";
 import { programs, faculties } from "@/data/content";
+import { useSearchParams } from "react-router-dom";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const Apply = () => {
-  const [form, setForm] = useState({ fullName: "", email: "", phone: "", program: "", faculty: "", message: "" });
+  const [searchParams] = useSearchParams();
+  const selectedProgramId = searchParams.get("program") || "";
+  const selectedProgram = programs.find((p) => p.id === selectedProgramId);
+
+  const [form, setForm] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    program: selectedProgram?.id || "",
+    faculty: selectedProgram?.faculty || "",
+    message: "",
+  });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");

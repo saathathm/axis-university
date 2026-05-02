@@ -118,10 +118,10 @@ const Academics = () => {
                       <p className="text-xs text-muted-foreground mb-2">{f.name}</p>
                       <p className="text-sm text-muted-foreground mb-4">{p.description}</p>
                       <Link
-                        to="/student/apply"
+                        to={`/academics/${p.id}`}
                         className="inline-flex items-center justify-center rounded-md bg-gradient-accent px-4 py-2 text-xs font-semibold text-accent-foreground"
                       >
-                        Apply Now
+                        View Course
                       </Link>
                     </article>
                   );
