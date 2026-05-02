@@ -19,6 +19,15 @@ const getCurriculum = (program) => {
   ];
 };
 
+const batchSchedule = {
+  batchNumber: "CAA/05",
+  type: "Full Time",
+  startingDate: "2025-06-16",
+  days: "Monday & Tuesday",
+  start: "09:00",
+  end: "17:00",
+};
+
 const ProgramDetail = () => {
   const { programId } = useParams();
   const [activeTab, setActiveTab] = useState("Overview");
@@ -90,8 +99,8 @@ const ProgramDetail = () => {
 
       <section className="py-12 md:py-16">
         <div className="container grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] items-start">
-          <div className="rounded-3xl border bg-card p-5 shadow-soft md:p-6">
-            <div className="grid grid-cols-3 gap-2 overflow-hidden rounded-2xl border bg-secondary/40 p-1 text-center text-xs font-semibold">
+          <div className="rounded-[1.6rem] border border-border bg-card shadow-soft overflow-hidden">
+            <div className="grid grid-cols-3 text-center text-sm font-bold">
               {tabs.map((tab) => {
                 const active = activeTab === tab;
                 return (
@@ -99,7 +108,7 @@ const ProgramDetail = () => {
                     key={tab}
                     type="button"
                     onClick={() => setActiveTab(tab)}
-                    className={`rounded-xl px-3 py-3 transition-smooth ${active ? "bg-primary text-primary-foreground shadow-soft" : "text-foreground/70 hover:bg-background"}`}
+                    className={`px-4 py-5 transition-smooth ${active ? "bg-accent text-accent-foreground" : "bg-secondary text-foreground hover:bg-secondary/80"} ${tab === "Overview" ? "rounded-tl-[1.6rem]" : ""} ${tab === "Batch Schedule" ? "rounded-tr-[1.6rem]" : ""}`}
                   >
                     {tab}
                   </button>
@@ -107,7 +116,7 @@ const ProgramDetail = () => {
               })}
             </div>
 
-            <div className="mt-6 space-y-6">
+            <div className="border-t border-border bg-background px-6 py-8 md:px-8 md:py-10">
               {activeTab === "Overview" && (
                 <>
                   <div>
@@ -119,9 +128,9 @@ const ProgramDetail = () => {
 
                   <div>
                     <h3 className="mb-3 text-lg font-semibold text-foreground">Suitable for</h3>
-                    <ul className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
+                    <ul className="grid gap-0 overflow-hidden rounded-2xl border border-border text-sm text-muted-foreground">
                       {overviewPoints.map((item) => (
-                        <li key={item} className="flex items-start gap-2 rounded-xl border bg-background px-3 py-2">
+                        <li key={item} className="flex items-start gap-3 px-4 py-3 odd:bg-secondary/35 even:bg-background">
                           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
                           <span>{item}</span>
                         </li>
@@ -133,35 +142,48 @@ const ProgramDetail = () => {
 
               {activeTab === "Curriculum" && (
                 <div>
-                  <h2 className="text-2xl font-bold text-primary">Curriculum</h2>
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <h2 className="mb-4 text-2xl font-bold text-primary">Curriculum</h2>
+                  <ul className="space-y-2">
                     {curriculum.map((item, index) => (
-                      <div key={item} className="rounded-2xl border bg-background p-4 shadow-soft">
-                        <div className="mb-2 inline-flex h-8 w-8 items-center justify-center rounded-xl bg-accent-soft text-sm font-bold text-accent">
-                          {index + 1}
-                        </div>
-                        <p className="font-semibold text-foreground">{item}</p>
-                      </div>
+                      <li
+                        key={item}
+                        className={`flex items-start gap-4 rounded-sm border border-border px-5 py-3 ${index % 2 === 0 ? "bg-secondary/35" : "bg-background"}`}
+                      >
+                        <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-muted-foreground/80" aria-hidden="true" />
+                        <span className="text-lg leading-7 text-foreground/80">{item}</span>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
               )}
 
               {activeTab === "Batch Schedule" && (
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border bg-background p-5 shadow-soft">
-                    <div className="flex items-center gap-2 text-primary">
-                      <CalendarDays className="h-5 w-5" />
-                      <h2 className="text-lg font-bold">Intakes</h2>
+                <div>
+                  <div className="overflow-hidden rounded-2xl border border-border bg-background">
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full border-collapse text-left">
+                        <thead>
+                          <tr className="border-b border-border text-sm font-bold text-slate-600">
+                            <th className="px-5 py-4">Batch #</th>
+                            <th className="px-5 py-4">Type</th>
+                            <th className="px-5 py-4">Starting Date</th>
+                            <th className="px-5 py-4">Day(s)</th>
+                            <th className="px-5 py-4 text-center">Start</th>
+                            <th className="px-5 py-4 text-center">End</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="text-lg text-slate-700">
+                            <td className="px-5 py-6 font-semibold text-foreground">{batchSchedule.batchNumber}</td>
+                            <td className="px-5 py-6">{batchSchedule.type}</td>
+                            <td className="px-5 py-6">{batchSchedule.startingDate}</td>
+                            <td className="px-5 py-6">{batchSchedule.days}</td>
+                            <td className="px-5 py-6 text-center">{batchSchedule.start}</td>
+                            <td className="px-5 py-6 text-center">{batchSchedule.end}</td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
-                    <p className="mt-3 text-sm text-muted-foreground">Applications are reviewed on a rolling basis with multiple entry points each academic year.</p>
-                  </div>
-                  <div className="rounded-2xl border bg-background p-5 shadow-soft">
-                    <div className="flex items-center gap-2 text-primary">
-                      <MapPin className="h-5 w-5" />
-                      <h2 className="text-lg font-bold">Delivery</h2>
-                    </div>
-                    <p className="mt-3 text-sm text-muted-foreground">Campus-based study with flexible support for full-time and part-time learners.</p>
                   </div>
                 </div>
               )}
