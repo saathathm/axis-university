@@ -54,6 +54,13 @@ const Header = () => {
 
         <div className="flex items-center gap-2">
           <Link
+            to="/auth/login"
+            className="hidden sm:inline-flex rounded-full px-4 py-2 text-sm font-semibold text-accent hover:text-accent/80 transition-smooth border border-accent/30 hover:border-accent/60"
+          >
+            Login
+          </Link>
+
+          <Link
             to="/verify"
             className="hidden md:inline-flex items-center gap-2 rounded-full bg-gradient-accent px-5 py-2 text-sm font-semibold text-accent-foreground shadow-glow hover:opacity-90 transition-smooth"
           >
@@ -106,13 +113,21 @@ const Header = () => {
                   {item.label}
                 </NavLink>
               ))}
-              <Link
-                to="/verify"
-                className="mt-4 inline-flex items-center gap-2 rounded-full bg-gradient-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
-              >
-                <ShieldCheck className="h-4 w-4" />
-                Verify Certificate
-              </Link>
+              <div className="mt-4 flex flex-col gap-2">
+                <Link
+                  to="/auth/login"
+                  className="inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-accent border border-accent/30 hover:bg-secondary/40"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/verify"
+                  className="inline-flex items-center gap-2 rounded-full bg-gradient-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
+                >
+                  <ShieldCheck className="h-4 w-4" />
+                  Verify Certificate
+                </Link>
+              </div>
             </div>
           </div>
         </div>
