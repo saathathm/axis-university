@@ -1,10 +1,8 @@
 import { Link, useParams } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { faculties, programs } from "@/data/content";
-import { BookOpen, CalendarDays, Clock, Download, GraduationCap, MapPin, ShieldCheck, Users } from "lucide-react";
-import { useMemo, useState } from "react";
-
-const tabs = ["Overview", "Curriculum", "Batch Schedule"];
+import { BookOpen, Clock, Download, GraduationCap, MapPin, ShieldCheck, Users } from "lucide-react";
+import { useMemo } from "react";
 
 const getFacultyName = (facultyId) => faculties.find((faculty) => faculty.id === facultyId)?.name || "";
 
@@ -19,18 +17,8 @@ const getCurriculum = (program) => {
   ];
 };
 
-const batchSchedule = {
-  batchNumber: "CAA/05",
-  type: "Full Time",
-  startingDate: "2025-06-16",
-  days: "Monday & Tuesday",
-  start: "09:00",
-  end: "17:00",
-};
-
 const ProgramDetail = () => {
   const { programId } = useParams();
-  const [activeTab, setActiveTab] = useState("Overview");
 
   const program = useMemo(() => programs.find((item) => item.id === programId), [programId]);
 
@@ -100,93 +88,37 @@ const ProgramDetail = () => {
       <section className="py-12 md:py-16">
         <div className="container grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] items-start">
           <div className="rounded-[1.6rem] border border-border bg-card shadow-soft overflow-hidden">
-            <div className="grid grid-cols-3 text-center text-sm font-bold">
-              {tabs.map((tab) => {
-                const active = activeTab === tab;
-                return (
-                  <button
-                    key={tab}
-                    type="button"
-                    onClick={() => setActiveTab(tab)}
-                    className={`px-4 py-5 transition-smooth ${active ? "bg-accent text-accent-foreground" : "bg-secondary text-foreground hover:bg-secondary/80"} ${tab === "Overview" ? "rounded-tl-[1.6rem]" : ""} ${tab === "Batch Schedule" ? "rounded-tr-[1.6rem]" : ""}`}
-                  >
-                    {tab}
-                  </button>
-                );
-              })}
-            </div>
-
             <div className="border-t border-border bg-background px-6 py-8 md:px-8 md:py-10">
-              {activeTab === "Overview" && (
-                <>
-                  <div>
-                    <h2 className="text-2xl font-bold text-primary">Course Summary</h2>
-                    <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
-                      {program.overview || program.description}
-                    </p>
-                  </div>
+              <div>
+                <h2 className="text-2xl font-bold text-primary">Course Summary</h2>
+                <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
+                  {program.overview || program.description}
+                </p>
+              </div>
 
-                  <div>
-                    <h3 className="mb-3 text-lg font-semibold text-foreground">Suitable for</h3>
-                    <ul className="grid gap-0 overflow-hidden rounded-2xl border border-border text-sm text-muted-foreground">
-                      {overviewPoints.map((item) => (
-                        <li key={item} className="flex items-start gap-3 px-4 py-3 odd:bg-secondary/35 even:bg-background">
-                          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </>
-              )}
+              <div className="mt-10">
+                <h3 className="mb-3 text-lg font-semibold text-foreground">Suitable for</h3>
+                <ul className="grid gap-0 overflow-hidden rounded-2xl border border-border text-sm text-muted-foreground">
+                  {overviewPoints.map((item) => (
+                    <li key={item} className="flex items-start gap-3 px-4 py-3 odd:bg-secondary/35 even:bg-background">
+                      <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-              {activeTab === "Curriculum" && (
-                <div>
-                  <h2 className="mb-4 text-2xl font-bold text-primary">Curriculum</h2>
-                  <ul className="space-y-2">
-                    {curriculum.map((item, index) => (
-                      <li
-                        key={item}
-                        className={`flex items-start gap-4 rounded-sm border border-border px-5 py-3 ${index % 2 === 0 ? "bg-secondary/35" : "bg-background"}`}
-                      >
-                        <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-muted-foreground/80" aria-hidden="true" />
-                        <span className="text-lg leading-7 text-foreground/80">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {activeTab === "Batch Schedule" && (
-                <div>
-                  <div className="overflow-hidden rounded-2xl border border-border bg-background">
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full border-collapse text-left">
-                        <thead>
-                          <tr className="border-b border-border text-sm font-bold text-slate-600">
-                            <th className="px-5 py-4">Batch #</th>
-                            <th className="px-5 py-4">Type</th>
-                            <th className="px-5 py-4">Starting Date</th>
-                            <th className="px-5 py-4">Day(s)</th>
-                            <th className="px-5 py-4 text-center">Start</th>
-                            <th className="px-5 py-4 text-center">End</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr className="text-lg text-slate-700">
-                            <td className="px-5 py-6 font-semibold text-foreground">{batchSchedule.batchNumber}</td>
-                            <td className="px-5 py-6">{batchSchedule.type}</td>
-                            <td className="px-5 py-6">{batchSchedule.startingDate}</td>
-                            <td className="px-5 py-6">{batchSchedule.days}</td>
-                            <td className="px-5 py-6 text-center">{batchSchedule.start}</td>
-                            <td className="px-5 py-6 text-center">{batchSchedule.end}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              )}
+              <div className="mt-10">
+                <h3 className="mb-3 text-lg font-semibold text-foreground">Curriculum</h3>
+                <ul className="grid gap-0 overflow-hidden rounded-2xl border border-border text-sm text-muted-foreground">
+                  {curriculum.map((item) => (
+                    <li key={item} className="flex items-start gap-3 px-4 py-3 odd:bg-secondary/35 even:bg-background">
+                      <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
 
