@@ -1,6 +1,7 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu, ShieldCheck, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import logo from "@/assets/logo.png";
 
 const navItems = [
@@ -27,7 +28,68 @@ const Header = () => {
 
   useEffect(() => { setOpen(false); }, [location.pathname]);
 
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+    } else {
+      document.body.style.overflow = 'unset';
+      document.body.style.touchAction = '';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+      document.body.style.touchAction = '';
+    };
+  }, [open]);
+
   const headerClass = `sticky top-0 z-50 w-full border-b border-border transition-smooth ${scrolled ? "bg-background/95 backdrop-blur shadow-soft" : "bg-background"}`;
+
+  const overlay = open ? (
+    <div className="fixed inset-0 z-[9999] lg:hidden">
+      <button
+        type="button"
+        aria-label="Close menu"
+        className="fixed inset-0 bg-black/40"
+        onClick={() => setOpen(false)}
+      />
+      <div className="absolute right-0 top-0 h-full w-72 bg-background shadow-elegant p-6 z-[10000]">
+        <div className="flex items-center justify-between">
+          <span className="text-base font-semibold text-primary">Menu</span>
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border hover:bg-secondary transition-smooth"
+            aria-label="Close menu"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <div className="mt-6 flex flex-col gap-2">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.to === "/"}
+              className={({ isActive }) =>
+                `px-4 py-3 text-base font-semibold rounded-2xl transition-smooth ${isActive ? "bg-accent text-accent-foreground" : "hover:bg-secondary/40"}`
+              }
+            >
+              {item.label}
+            </NavLink>
+          ))}
+          <div className="mt-4 flex flex-col gap-2">
+            <Link
+              to="/verify"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
+            >
+              <ShieldCheck className="h-4 w-4" />
+              Verify Certificate
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  ) : null;
 
   return (
     <header className={headerClass}>
@@ -73,52 +135,7 @@ const Header = () => {
         </div>
       </div>
 
-      {open && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <button
-            type="button"
-            aria-label="Close menu"
-            className="absolute inset-0 bg-black/40"
-            onClick={() => setOpen(false)}
-          />
-          <div className="absolute right-0 top-0 h-full w-72 bg-background shadow-elegant p-6">
-            <div className="flex items-center justify-between">
-              <span className="text-base font-semibold text-primary">Menu</span>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border hover:bg-secondary transition-smooth"
-                aria-label="Close menu"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="mt-6 flex flex-col gap-2">
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.to === "/"}
-                  className={({ isActive }) =>
-                    `px-4 py-3 text-base font-semibold rounded-2xl transition-smooth ${isActive ? "bg-accent text-accent-foreground" : "hover:bg-secondary/40"}`
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              ))}
-              <div className="mt-4 flex flex-col gap-2">
-                <Link
-                  to="/verify"
-                  className="inline-flex items-center gap-2 rounded-full bg-gradient-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
-                >
-                  <ShieldCheck className="h-4 w-4" />
-                  Verify Certificate
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {createPortal(overlay, document.body)}
     </header>
   );
 };
