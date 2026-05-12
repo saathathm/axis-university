@@ -12,8 +12,6 @@ import Grading from "./pages/student/Grading.jsx";
 import Download from "./pages/Download.jsx";
 import Contact from "./pages/Contact.jsx";
 import Verify from "./pages/Verify.jsx";
-import Login from "./pages/auth/Login.jsx";
-import Signin from "./pages/auth/Signin.jsx";
 import NotFound from "./pages/NotFound.jsx";
 
 function App() {
@@ -33,8 +31,6 @@ function App() {
         <Route path="/download" element={<Download />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/verify" element={<Verify />} />
-        <Route path="/auth/login" element={<Login />} />
-        <Route path="/auth/signin" element={<Signin />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
