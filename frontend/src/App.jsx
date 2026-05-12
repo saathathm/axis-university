@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import ScrollToTop from "./components/ScrollToTop.jsx";
 import Index from "./pages/Index.jsx";
 import About from "./pages/About.jsx";
 import Recognitions from "./pages/Recognitions.jsx";
@@ -17,6 +18,7 @@ import NotFound from "./pages/NotFound.jsx";
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/about" element={<About />} />
