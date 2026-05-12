@@ -1,7 +1,8 @@
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import PageHero from "@/components/shared/PageHero";
-import { CheckCircle2, ShieldCheck, XCircle } from "lucide-react";
+import VerificationResultModal from "@/components/shared/VerificationResultModal";
+import { ShieldCheck } from "lucide-react";
 
 // Mock verified records (frontend only)
 const records = [
@@ -13,7 +14,6 @@ const Verify = () => {
   const [form, setForm] = useState({ certId: "", fullName: "" });
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
-  const [error, setError] = useState("");
   const update = (k, v) => setForm((p) => ({ ...p, [k]: v }));
 
   const validate = () => {
@@ -26,12 +26,10 @@ const Verify = () => {
     e.preventDefault();
     const message = validate();
     if (message) {
-      setError(message);
-      setResult(null);
+      setResult({ status: "validation_error", message });
       return;
     }
     setLoading(true);
-    setError("");
     setResult(null);
     setTimeout(() => {
       const found = records.find(
@@ -89,40 +87,16 @@ const Verify = () => {
             >
               {loading ? "Verifying..." : "Verify Now"}
             </button>
-            {error && (
-              <p className="text-sm text-destructive" aria-live="polite">{error}</p>
-            )}
             <p className="text-xs text-muted-foreground">Try AXIS-2024-001 / Sara Ahmed for a sample successful verification.</p>
           </form>
-
-          {result && (
-            <div className={`mt-6 rounded-2xl border p-6 shadow-soft animate-fade-in ${result.status === "verified" ? "bg-success/10 border-success/30" : "bg-destructive/10 border-destructive/30"}`}>
-              {result.status === "verified" ? (
-                <div className="flex items-start gap-4">
-                  <CheckCircle2 className="h-8 w-8 text-success shrink-0" />
-                  <div>
-                    <h3 className="font-bold text-primary text-lg">Certificate Verified</h3>
-                    <p className="text-sm text-muted-foreground mt-1">This certificate is authentic and issued by Axis University.</p>
-                    <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                      <div><dt className="text-muted-foreground">Name</dt><dd className="font-medium">{result.name}</dd></div>
-                      <div><dt className="text-muted-foreground">Program</dt><dd className="font-medium">{result.program}</dd></div>
-                      <div><dt className="text-muted-foreground">Year</dt><dd className="font-medium">{result.year}</dd></div>
-                    </dl>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-start gap-4">
-                  <XCircle className="h-8 w-8 text-destructive shrink-0" />
-                  <div>
-                    <h3 className="font-bold text-primary text-lg">Not Found</h3>
-                    <p className="text-sm text-muted-foreground mt-1">No certificate matches the details provided. Please check and try again, or contact our office.</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </section>
+
+      <VerificationResultModal
+        result={result}
+        isOpen={Boolean(result)}
+        onClose={() => setResult(null)}
+      />
     </Layout>
   );
 };
