@@ -1,25 +1,75 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import PageHero from "@/components/shared/PageHero";
-import { CheckCircle2 } from "lucide-react";
-import { programs, faculties } from "@/data/content";
+import { CalendarDays, CheckCircle2 } from "lucide-react";
+import { programs } from "@/data/content";
 import { useSearchParams } from "react-router-dom";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const countryOptions = [
+  "Afghanistan",
+  "Algeria",
+  "Argentina",
+  "Australia",
+  "Bangladesh",
+  "Brazil",
+  "Canada",
+  "China",
+  "Egypt",
+  "France",
+  "Germany",
+  "India",
+  "Indonesia",
+  "Iraq",
+  "Italy",
+  "Jordan",
+  "Kenya",
+  "Lebanon",
+  "Malaysia",
+  "Morocco",
+  "Nepal",
+  "Netherlands",
+  "Nigeria",
+  "Pakistan",
+  "Philippines",
+  "Qatar",
+  "Saudi Arabia",
+  "South Africa",
+  "Spain",
+  "Sri Lanka",
+  "Sudan",
+  "Turkey",
+  "United Arab Emirates",
+  "United Kingdom",
+  "United States",
+];
+
+const createInitialForm = (selectedProgramId = "") => ({
+  firstName: "",
+  lastName: "",
+  passportNumber: "",
+  dateOfBirth: "",
+  contactNumber: "",
+  streetAddress: "",
+  townCity: "",
+  country: "",
+  postcode: "",
+  emailAddress: "",
+  program: selectedProgramId,
+});
+
 const Apply = () => {
   const [searchParams] = useSearchParams();
   const selectedProgramId = searchParams.get("program") || "";
-  const selectedProgram = programs.find((p) => p.id === selectedProgramId);
+  const selectedProgram = useMemo(
+    () => programs.find((program) => program.id === selectedProgramId),
+    [selectedProgramId],
+  );
 
-  const [form, setForm] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    program: selectedProgram?.id || "",
-    faculty: selectedProgram?.faculty || "",
-    message: "",
-  });
+  const [form, setForm] = useState(() =>
+    createInitialForm(selectedProgram?.id || ""),
+  );
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -27,10 +77,16 @@ const Apply = () => {
   const update = (k, v) => setForm((p) => ({ ...p, [k]: v }));
 
   const validate = () => {
-    if (form.fullName.trim().length < 2) return "Full name is required";
-    if (!emailRegex.test(form.email.trim())) return "Valid email required";
-    if (form.phone.trim().length < 6) return "Phone is required";
-    if (!form.faculty) return "Please select a faculty";
+    if (form.firstName.trim().length < 2) return "First name is required";
+    if (form.lastName.trim().length < 2) return "Last name is required";
+    if (form.passportNumber.trim().length < 4) return "Passport number is required";
+    if (!form.dateOfBirth) return "Date of birth is required";
+    if (form.contactNumber.trim().length < 6) return "Contact number is required";
+    if (form.streetAddress.trim().length < 5) return "Street address is required";
+    if (form.townCity.trim().length < 2) return "Town / City is required";
+    if (!form.country) return "Please select a country";
+    if (form.postcode.trim().length < 2) return "Postcode / Zip is required";
+    if (!emailRegex.test(form.emailAddress.trim())) return "Valid email required";
     if (!form.program) return "Please select a program";
     return "";
   };
@@ -49,19 +105,26 @@ const Apply = () => {
 
   return (
     <Layout>
-      <PageHero title="Apply Now" subtitle="Take the first step toward your future at Axis University." />
-      <section className="py-16">
-        <div className="container max-w-2xl">
+      <PageHero
+        title="Apply Now"
+        subtitle="Complete the student details form to begin your application."
+      />
+      <section className="py-16 md:py-20">
+        <div className="container max-w-6xl">
           {submitted ? (
-            <div className="rounded-2xl border bg-card p-10 text-center shadow-elegant">
+            <div className="mx-auto max-w-3xl rounded-2xl border bg-card p-10 text-center shadow-elegant">
               <CheckCircle2 className="h-16 w-16 text-success mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-primary mb-2">Application Received!</h2>
-              <p className="text-muted-foreground mb-6">Thank you, {form.fullName}. Our admissions team will contact you at {form.email} within 3 business days.</p>
+              <p className="text-muted-foreground mb-6">
+                Thank you, {form.firstName} {form.lastName}. Our admissions
+                team will contact you at {form.emailAddress} within 3 business
+                days.
+              </p>
               <button
                 type="button"
                 onClick={() => {
                   setSubmitted(false);
-                  setForm({ fullName: "", email: "", phone: "", program: "", faculty: "", message: "" });
+                  setForm(createInitialForm(selectedProgram?.id || ""));
                   setError("");
                 }}
                 className="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm font-semibold text-foreground hover:bg-secondary"
@@ -70,91 +133,201 @@ const Apply = () => {
               </button>
             </div>
           ) : (
-            <form onSubmit={onSubmit} className="rounded-2xl border bg-card p-7 md:p-9 shadow-soft space-y-5">
-              <div className="grid sm:grid-cols-2 gap-5">
+            <form
+              onSubmit={onSubmit}
+              className="mx-auto max-w-6xl rounded-3xl border bg-card p-6 shadow-soft md:p-10"
+            >
+              <div className="mb-8">
+                <h2 className="text-2xl font-semibold text-primary md:text-3xl">
+                  Student details
+                </h2>
+              </div>
+
+              <div className="grid gap-6 md:grid-cols-2">
                 <div>
-                  <label htmlFor="fullName" className="text-sm font-medium text-foreground">Full Name *</label>
+                  <label htmlFor="firstName" className="text-sm font-medium text-foreground">
+                    First Name*
+                  </label>
                   <input
-                    id="fullName"
-                    value={form.fullName}
-                    onChange={(e) => update("fullName", e.target.value)}
+                    id="firstName"
+                    value={form.firstName}
+                    onChange={(e) => update("firstName", e.target.value)}
                     maxLength={100}
                     required
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-md border border-input bg-background px-4 py-3 text-sm"
                   />
                 </div>
                 <div>
-                  <label htmlFor="email" className="text-sm font-medium text-foreground">Email *</label>
+                  <label htmlFor="lastName" className="text-sm font-medium text-foreground">
+                    Last Name*
+                  </label>
                   <input
-                    id="email"
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => update("email", e.target.value)}
-                    maxLength={255}
+                    id="lastName"
+                    value={form.lastName}
+                    onChange={(e) => update("lastName", e.target.value)}
+                    maxLength={100}
                     required
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-md border border-input bg-background px-4 py-3 text-sm"
                   />
                 </div>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-5">
+
                 <div>
-                  <label htmlFor="phone" className="text-sm font-medium text-foreground">Phone *</label>
+                  <label htmlFor="passportNumber" className="text-sm font-medium text-foreground">
+                    Passport Number*
+                  </label>
                   <input
-                    id="phone"
-                    value={form.phone}
-                    onChange={(e) => update("phone", e.target.value)}
+                    id="passportNumber"
+                    value={form.passportNumber}
+                    onChange={(e) => update("passportNumber", e.target.value)}
+                    maxLength={40}
+                    required
+                    className="mt-1 w-full rounded-md border border-input bg-background px-4 py-3 text-sm"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="dateOfBirth" className="text-sm font-medium text-foreground">
+                    Date of Birth*
+                  </label>
+                  <div className="relative mt-1">
+                    <CalendarDays className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      id="dateOfBirth"
+                      type="date"
+                      value={form.dateOfBirth}
+                      onChange={(e) => update("dateOfBirth", e.target.value)}
+                      required
+                      className="w-full rounded-md border border-input bg-background px-4 py-3 pr-10 text-sm"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="contactNumber" className="text-sm font-medium text-foreground">
+                    Contact Number*
+                  </label>
+                  <input
+                    id="contactNumber"
+                    value={form.contactNumber}
+                    onChange={(e) => update("contactNumber", e.target.value)}
                     maxLength={30}
                     required
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-md border border-input bg-background px-4 py-3 text-sm"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label htmlFor="streetAddress" className="text-sm font-medium text-foreground">
+                    Street address*
+                  </label>
+                  <input
+                    id="streetAddress"
+                    value={form.streetAddress}
+                    onChange={(e) => update("streetAddress", e.target.value)}
+                    maxLength={200}
+                    required
+                    placeholder="House number and street name"
+                    className="mt-1 w-full rounded-md border border-input bg-background px-4 py-3 text-sm"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-foreground">Faculty *</label>
+                  <label htmlFor="townCity" className="text-sm font-medium text-foreground">
+                    Town / City*
+                  </label>
+                  <input
+                    id="townCity"
+                    value={form.townCity}
+                    onChange={(e) => update("townCity", e.target.value)}
+                    maxLength={120}
+                    required
+                    className="mt-1 w-full rounded-md border border-input bg-background px-4 py-3 text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="country" className="text-sm font-medium text-foreground">
+                    Country*
+                  </label>
                   <select
-                    value={form.faculty}
-                    onChange={(e) => update("faculty", e.target.value)}
-                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    id="country"
+                    value={form.country}
+                    onChange={(e) => update("country", e.target.value)}
+                    required
+                    className="mt-1 w-full rounded-md border border-input bg-background px-4 py-3 text-sm"
                   >
-                    <option value="">Select faculty</option>
-                    {faculties.map((f) => (
-                      <option key={f.id} value={f.id}>{f.name}</option>
+                    <option value="">Choose Country...</option>
+                    {countryOptions.map((country) => (
+                      <option key={country} value={country}>
+                        {country}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="postcode" className="text-sm font-medium text-foreground">
+                    Postcode / Zip*
+                  </label>
+                  <input
+                    id="postcode"
+                    value={form.postcode}
+                    onChange={(e) => update("postcode", e.target.value)}
+                    maxLength={20}
+                    required
+                    className="mt-1 w-full rounded-md border border-input bg-background px-4 py-3 text-sm"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label htmlFor="emailAddress" className="text-sm font-medium text-foreground">
+                    Email Address*
+                  </label>
+                  <input
+                    id="emailAddress"
+                    type="email"
+                    value={form.emailAddress}
+                    onChange={(e) => update("emailAddress", e.target.value)}
+                    maxLength={255}
+                    required
+                    className="mt-1 w-full rounded-md border border-input bg-background px-4 py-3 text-sm"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label htmlFor="program" className="text-sm font-medium text-foreground">
+                    Choose Program*
+                  </label>
+                  <select
+                    id="program"
+                    value={form.program}
+                    onChange={(e) => update("program", e.target.value)}
+                    required
+                    className="mt-1 w-full rounded-md border border-input bg-background px-4 py-3 text-sm"
+                  >
+                    <option value="">Choose Program</option>
+                    {programs.map((program) => (
+                      <option key={program.id} value={program.id}>
+                        {program.title} — {program.level}
+                      </option>
                     ))}
                   </select>
                 </div>
               </div>
-              <div>
-                <label className="text-sm font-medium text-foreground">Program *</label>
-                <select
-                  value={form.program}
-                  onChange={(e) => update("program", e.target.value)}
-                  className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+
+              <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm text-muted-foreground">
+                  Fields marked with an asterisk are required.
+                </p>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="inline-flex w-full items-center justify-center rounded-md bg-gradient-accent px-6 py-3 text-sm font-semibold text-accent-foreground hover:opacity-90 disabled:opacity-60 sm:w-auto"
                 >
-                  <option value="">Select program</option>
-                  {programs.filter((p) => !form.faculty || p.faculty === form.faculty).map((p) => (
-                    <option key={p.id} value={p.id}>{p.title} — {p.level}</option>
-                  ))}
-                </select>
+                  {loading ? "Submitting..." : "Submit Application"}
+                </button>
               </div>
-              <div>
-                <label htmlFor="message" className="text-sm font-medium text-foreground">Message (optional)</label>
-                <textarea
-                  id="message"
-                  value={form.message}
-                  onChange={(e) => update("message", e.target.value)}
-                  maxLength={1000}
-                  rows={4}
-                  className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-md bg-gradient-accent px-4 py-2 text-sm font-semibold text-accent-foreground hover:opacity-90 disabled:opacity-60"
-              >
-                {loading ? "Submitting..." : "Submit Application"}
-              </button>
+
               {error && (
-                <p className="text-sm text-destructive" aria-live="polite">{error}</p>
+                <p className="mt-4 text-sm text-destructive" aria-live="polite">
+                  {error}
+                </p>
               )}
             </form>
           )}
