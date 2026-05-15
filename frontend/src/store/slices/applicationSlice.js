@@ -41,7 +41,9 @@ export const verifyCertificate = createAsyncThunk(
       const response = await api.get("/certificates/verify", { params: payload });
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Certificate not found.");
+      return error.response?.data?.status === "not_found"
+        ? error.response.data
+        : rejectWithValue(error.response?.data?.message || "Unable to verify certificate.");
     }
   },
 );

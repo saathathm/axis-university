@@ -6,12 +6,6 @@ import VerificationResultModal from "@/components/shared/VerificationResultModal
 import { ShieldCheck } from "lucide-react";
 import { verifyCertificate } from "@/store/slices/applicationSlice.js";
 
-// Mock verified records (frontend only)
-const records = [
-  { certId: "AXIS-2024-001", fullName: "Sara Ahmed", program: "BBA Marketing", year: "2024" },
-  { certId: "AXIS-2023-188", fullName: "Omar Hassan", program: "MSc Data Science", year: "2023" },
-];
-
 const Verify = () => {
   const dispatch = useDispatch();
   const [form, setForm] = useState({ certId: "", fullName: "" });
@@ -37,15 +31,9 @@ const Verify = () => {
     dispatch(verifyCertificate({ cert_id: form.certId, full_name: form.fullName }))
       .unwrap()
       .then((payload) => {
-        setResult(payload.status === "verified" ? { status: "verified", data: payload.data } : { status: "not_found" });
+        setResult(payload.status === "verified" ? { status: "verified", ...payload.data } : { status: "not_found" });
       })
-      .catch(() => {
-        const found = records.find(
-          (rec) => rec.certId.toLowerCase() === form.certId.toLowerCase() &&
-                   rec.fullName.toLowerCase() === form.fullName.toLowerCase()
-        );
-        setResult(found ? { status: "verified", program: found.program, year: found.year, name: found.fullName } : { status: "not_found" });
-      })
+      .catch((err) => setResult({ status: "validation_error", message: err || "Unable to verify certificate." }))
       .finally(() => setLoading(false));
   };
 
@@ -95,7 +83,7 @@ const Verify = () => {
             >
               {loading ? "Verifying..." : "Verify Now"}
             </button>
-            <p className="text-xs text-muted-foreground">Try AXIS-2024-001 / Sara Ahmed for a sample successful verification.</p>
+            <p className="text-xs text-muted-foreground">Try AXIS-2024-002 / Caral Davis for a sample successful verification.</p>
           </form>
         </div>
       </section>

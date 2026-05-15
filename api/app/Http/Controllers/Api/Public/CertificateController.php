@@ -17,23 +17,29 @@ class CertificateController extends Controller
         ]);
 
         $certificate = Certificate::query()
-            ->with('student')
+            ->with(['student', 'program'])
             ->where('cert_id', $validated['cert_id'])
             ->first();
 
         if (! $certificate || ! $certificate->student) {
-            return response()->json(['status' => 'not_found'], 404);
+            return response()->json(['status' => 'not_found']);
         }
 
         $fullName = trim($certificate->student->first_name.' '.$certificate->student->last_name);
 
         if (mb_strtolower($fullName) !== mb_strtolower($validated['full_name'])) {
-            return response()->json(['status' => 'not_found'], 404);
+            return response()->json(['status' => 'not_found']);
         }
 
         return response()->json([
             'status' => 'verified',
-            'data' => $certificate,
+            'data' => [
+                'cert_id' => $certificate->cert_id,
+                'name' => $fullName,
+                'program' => $certificate->program?->title,
+                'year' => $certificate->year,
+                'issued_at' => $certificate->issued_at,
+            ],
         ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Application;
+use App\Models\Certificate;
 use App\Models\Download;
 use App\Models\Faculty;
 use App\Models\Program;
@@ -212,5 +213,124 @@ class ApiWorkflowTest extends TestCase
         $this->assertSame($program->id, $student->program_id);
         $this->assertSame('john@example.com', $student->email);
         $this->assertNotEmpty($student->student_number);
+    }
+
+    public function test_admin_can_create_student_manually(): void
+    {
+        $admin = User::query()->create([
+            'name' => 'Admin User',
+            'email' => 'admin3@example.com',
+            'password' => 'Password123!',
+            'role' => 'admin',
+        ]);
+
+        $token = $this->postJson('/api/v1/admin/login', [
+            'email' => $admin->email,
+            'password' => 'Password123!',
+        ])->json('access_token');
+
+        $faculty = Faculty::query()->create([
+            'name' => 'Faculty of Technology',
+            'slug' => 'technology',
+            'description' => 'Technology programs',
+            'icon' => 'cpu',
+            'color' => 'text-primary',
+        ]);
+
+        $program = Program::query()->create([
+            'faculty_id' => $faculty->id,
+            'code' => 'DIP-IT',
+            'title' => 'Diploma in IT',
+            'level' => 'Diploma',
+            'duration' => '1 Year',
+            'overview' => 'IT overview',
+            'description' => 'IT description',
+            'curriculum' => ['Computing'],
+            'requirements' => ['School certificate'],
+            'intake' => 30,
+        ]);
+
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->postJson('/api/v1/admin/students', [
+                'first_name' => 'Maya',
+                'last_name' => 'Perera',
+                'contact_number' => '0771234567',
+                'street_address' => '10 Main Road',
+                'town_city' => 'Colombo',
+                'country' => 'Sri Lanka',
+                'postcode' => '00100',
+                'email' => 'maya@example.com',
+                'program_id' => $program->id,
+                'status' => 'active',
+            ]);
+
+        $response->assertCreated();
+        $response->assertJsonPath('data.first_name', 'Maya');
+        $response->assertJsonPath('data.program.id', $program->id);
+        $this->assertMatchesRegularExpression('/^AXIS-\d{4}-\d{4}$/', $response->json('data.student_number'));
+
+        $this->assertDatabaseHas('students', [
+            'email' => 'maya@example.com',
+            'program_id' => $program->id,
+            'status' => 'active',
+        ]);
+    }
+
+    public function test_certificate_verification_returns_verified_payload(): void
+    {
+        $faculty = Faculty::query()->create([
+            'name' => 'Faculty of Computing',
+            'slug' => 'computing',
+            'description' => 'Computing programs',
+            'icon' => 'cpu',
+            'color' => 'text-primary',
+        ]);
+
+        $program = Program::query()->create([
+            'faculty_id' => $faculty->id,
+            'code' => 'BSC-DS',
+            'title' => 'BSc Data Science',
+            'level' => 'Bachelor',
+            'duration' => '4 Years',
+            'overview' => 'Data science overview',
+            'description' => 'Data science description',
+            'curriculum' => ['Analytics'],
+            'requirements' => ['High school diploma'],
+            'intake' => 25,
+        ]);
+
+        $student = Student::query()->create([
+            'student_number' => 'AXIS-2024-0099',
+            'first_name' => 'Caral',
+            'last_name' => 'Davis',
+            'email' => 'caral@example.com',
+            'program_id' => $program->id,
+            'status' => 'active',
+        ]);
+
+        Certificate::query()->create([
+            'cert_id' => 'AXIS-2024-002',
+            'student_id' => $student->id,
+            'program_id' => $program->id,
+            'year' => '2024',
+            'issued_at' => now(),
+            'meta' => [],
+        ]);
+
+        $response = $this->getJson('/api/v1/certificates/verify?cert_id=AXIS-2024-002&full_name=Caral%20Davis');
+
+        $response->assertOk();
+        $response->assertJsonPath('status', 'verified');
+        $response->assertJsonPath('data.name', 'Caral Davis');
+        $response->assertJsonPath('data.program', 'BSc Data Science');
+        $response->assertJsonPath('data.year', '2024');
+    }
+
+    public function test_certificate_verification_not_found_returns_ok_status(): void
+    {
+        $response = $this->getJson('/api/v1/certificates/verify?cert_id=missing&full_name=No%20One');
+
+        $response->assertOk();
+        $response->assertJsonPath('status', 'not_found');
     }
 }

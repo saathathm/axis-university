@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Certificate;
 use App\Models\Faculty;
 use App\Models\Program;
+use App\Models\Student;
 use App\Models\Testimonial;
 use Illuminate\Database\Seeder;
 
@@ -28,8 +30,10 @@ class InitialDataSeeder extends Seeder
             ['faculty' => 'health', 'code' => 'P6', 'title' => 'BSc Nursing', 'level' => 'Bachelor', 'duration' => '4 years', 'overview' => 'Prepare for professional nursing practice through evidence-based study and supervised clinical experience.', 'description' => 'Clinical practice and patient care.', 'curriculum' => ['Anatomy & Physiology', 'Clinical Nursing', 'Community Health', 'Patient Care'], 'requirements' => ['Science background', 'Health screening', 'Interview and placement assessment']],
         ];
 
+        $createdPrograms = collect();
+
         foreach ($programs as $program) {
-            Program::query()->updateOrCreate(
+            $createdPrograms[$program['code']] = Program::query()->updateOrCreate(
                 ['code' => $program['code']],
                 [
                     'faculty_id' => $faculties[$program['faculty']]->id,
@@ -42,6 +46,58 @@ class InitialDataSeeder extends Seeder
                     'requirements' => $program['requirements'],
                     'intake' => 25,
                 ]
+            );
+        }
+
+        $students = [
+            [
+                'student_number' => 'AXIS-2024-0001',
+                'first_name' => 'Sara',
+                'last_name' => 'Ahmed',
+                'email' => 'sara.ahmed@example.com',
+                'program_code' => 'P1',
+                'cert_id' => 'AXIS-2024-001',
+                'year' => '2024',
+            ],
+            [
+                'student_number' => 'AXIS-2024-0002',
+                'first_name' => 'Caral',
+                'last_name' => 'Davis',
+                'email' => 'caral.davis@example.com',
+                'program_code' => 'P3',
+                'cert_id' => 'AXIS-2024-002',
+                'year' => '2024',
+            ],
+        ];
+
+        foreach ($students as $studentData) {
+            $program = $createdPrograms[$studentData['program_code']] ?? null;
+
+            if (! $program) {
+                continue;
+            }
+
+            $student = Student::query()->updateOrCreate(
+                ['student_number' => $studentData['student_number']],
+                [
+                    'first_name' => $studentData['first_name'],
+                    'last_name' => $studentData['last_name'],
+                    'email' => $studentData['email'],
+                    'program_id' => $program->id,
+                    'enrolled_at' => now(),
+                    'status' => 'active',
+                ],
+            );
+
+            Certificate::query()->updateOrCreate(
+                ['cert_id' => $studentData['cert_id']],
+                [
+                    'student_id' => $student->id,
+                    'program_id' => $program->id,
+                    'year' => $studentData['year'],
+                    'issued_at' => now(),
+                    'meta' => [],
+                ],
             );
         }
 
