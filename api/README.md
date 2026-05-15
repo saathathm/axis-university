@@ -147,7 +147,7 @@ Admin endpoints:
 6. An admin-only middleware checks that the authenticated user has role `admin`.
 
 Recommended package:
-- `tymon/jwt-auth`
+- `php-open-source-saver/jwt-auth` (compatible drop-in replacement)
 
 ## Folder Structure
 
@@ -197,7 +197,7 @@ php artisan migrate
 php artisan db:seed
 ```
 
-Generate JWT secret if using `tymon/jwt-auth`:
+Generate JWT secret if using `php-open-source-saver/jwt-auth`:
 
 ```bash
 php artisan jwt:secret

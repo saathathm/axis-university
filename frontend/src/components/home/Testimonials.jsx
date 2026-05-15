@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { Quote } from "lucide-react";
 import SectionHeading from "@/components/shared/SectionHeading";
 import { testimonials } from "@/data/content";
 
 const Testimonials = () => {
+  const apiTestimonials = useSelector((state) => state.content.testimonials);
+  const items = apiTestimonials.length ? apiTestimonials : testimonials;
   const [i, setI] = useState(0);
   useEffect(() => {
-    const t = setInterval(() => setI((p) => (p + 1) % testimonials.length), 5500);
+    const t = setInterval(() => setI((p) => (p + 1) % items.length), 5500);
     return () => clearInterval(t);
-  }, []);
+  }, [items.length]);
 
   return (
     <section className="py-20 bg-secondary/40">
@@ -17,14 +20,14 @@ const Testimonials = () => {
         <div className="max-w-3xl mx-auto">
           <div key={i} className="rounded-2xl bg-card p-8 md:p-10 shadow-elegant text-center animate-fade-in">
             <Quote className="mx-auto h-10 w-10 text-accent mb-5" />
-            <p className="text-lg md:text-xl text-foreground/85 italic leading-relaxed">"{testimonials[i].quote}"</p>
+            <p className="text-lg md:text-xl text-foreground/85 italic leading-relaxed">"{items[i % items.length].quote}"</p>
             <div className="mt-6">
-              <div className="font-semibold text-primary">{testimonials[i].name}</div>
-              <div className="text-sm text-muted-foreground">{testimonials[i].program}</div>
+              <div className="font-semibold text-primary">{items[i % items.length].name}</div>
+              <div className="text-sm text-muted-foreground">{items[i % items.length].program}</div>
             </div>
           </div>
           <div className="mt-6 flex justify-center gap-2">
-            {testimonials.map((_, idx) => (
+            {items.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => setI(idx)}

@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Layout from "@/components/layout/Layout";
 import PageHero from "@/components/shared/PageHero";
-import { CalendarDays, CheckCircle2 } from "lucide-react";
+import { CalendarDays, CheckCircle2, Upload } from "lucide-react";
 import { programs } from "@/data/content";
 import { useSearchParams } from "react-router-dom";
+import { submitApplication } from "@/store/slices/applicationSlice.js";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -57,14 +59,18 @@ const createInitialForm = (selectedProgramId = "") => ({
   postcode: "",
   emailAddress: "",
   program: selectedProgramId,
+  attachments: [],
 });
 
 const Apply = () => {
+  const dispatch = useDispatch();
+  const apiPrograms = useSelector((state) => state.content.programs);
+  const programItems = apiPrograms.length ? apiPrograms : programs;
   const [searchParams] = useSearchParams();
   const selectedProgramId = searchParams.get("program") || "";
   const selectedProgram = useMemo(
-    () => programs.find((program) => program.id === selectedProgramId),
-    [selectedProgramId],
+    () => programItems.find((program) => String(program.id) === String(selectedProgramId)),
+    [programItems, selectedProgramId],
   );
 
   const [form, setForm] = useState(() =>
@@ -88,6 +94,7 @@ const Apply = () => {
     if (form.postcode.trim().length < 2) return "Postcode / Zip is required";
     if (!emailRegex.test(form.emailAddress.trim())) return "Valid email required";
     if (!form.program) return "Please select a program";
+    if (form.attachments.length === 0) return "Please attach at least one supporting document";
     return "";
   };
 
@@ -100,7 +107,26 @@ const Apply = () => {
     }
     setLoading(true);
     setError("");
-    setTimeout(() => { setLoading(false); setSubmitted(true); }, 700);
+    dispatch(
+      submitApplication({
+        first_name: form.firstName,
+        last_name: form.lastName,
+        passport_number: form.passportNumber,
+        date_of_birth: form.dateOfBirth,
+        contact_number: form.contactNumber,
+        street_address: form.streetAddress,
+        town_city: form.townCity,
+        country: form.country,
+        postcode: form.postcode,
+        email_address: form.emailAddress,
+        program_id: selectedProgram?.backendId || selectedProgram?.id,
+        attachments: form.attachments,
+      }),
+    )
+      .unwrap()
+      .then(() => setSubmitted(true))
+      .catch((err) => setError(err))
+      .finally(() => setLoading(false));
   };
 
   return (
@@ -308,6 +334,39 @@ const Apply = () => {
                       </option>
                     ))}
                   </select>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label htmlFor="attachments" className="text-sm font-medium text-foreground">
+                    Supporting documents*
+                  </label>
+                  <label
+                    htmlFor="attachments"
+                    className="mt-1 flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-input bg-background px-6 py-8 text-center transition-smooth hover:border-primary/50 hover:bg-secondary/50"
+                  >
+                    <Upload className="mb-3 h-6 w-6 text-accent" />
+                    <span className="text-sm font-semibold text-foreground">Choose files</span>
+                    <span className="mt-1 text-xs text-muted-foreground">
+                      Upload one or more PDFs or images for passport, transcripts, or certificates.
+                    </span>
+                    <input
+                      id="attachments"
+                      type="file"
+                      multiple
+                      accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                      onChange={(e) => update("attachments", Array.from(e.target.files || []))}
+                      className="sr-only"
+                    />
+                  </label>
+                  {form.attachments.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {form.attachments.map((file) => (
+                        <span key={`${file.name}-${file.size}`} className="rounded-full border bg-secondary px-3 py-1 text-xs text-muted-foreground">
+                          {file.name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 

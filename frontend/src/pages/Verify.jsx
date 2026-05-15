@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import Layout from "@/components/layout/Layout";
 import PageHero from "@/components/shared/PageHero";
 import VerificationResultModal from "@/components/shared/VerificationResultModal";
 import { ShieldCheck } from "lucide-react";
+import { verifyCertificate } from "@/store/slices/applicationSlice.js";
 
 // Mock verified records (frontend only)
 const records = [
@@ -11,6 +13,7 @@ const records = [
 ];
 
 const Verify = () => {
+  const dispatch = useDispatch();
   const [form, setForm] = useState({ certId: "", fullName: "" });
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -31,14 +34,19 @@ const Verify = () => {
     }
     setLoading(true);
     setResult(null);
-    setTimeout(() => {
-      const found = records.find(
-        (rec) => rec.certId.toLowerCase() === form.certId.toLowerCase() &&
-                 rec.fullName.toLowerCase() === form.fullName.toLowerCase()
-      );
-      setResult(found ? { status: "verified", program: found.program, year: found.year, name: found.fullName } : { status: "not_found" });
-      setLoading(false);
-    }, 800);
+    dispatch(verifyCertificate({ cert_id: form.certId, full_name: form.fullName }))
+      .unwrap()
+      .then((payload) => {
+        setResult(payload.status === "verified" ? { status: "verified", data: payload.data } : { status: "not_found" });
+      })
+      .catch(() => {
+        const found = records.find(
+          (rec) => rec.certId.toLowerCase() === form.certId.toLowerCase() &&
+                   rec.fullName.toLowerCase() === form.fullName.toLowerCase()
+        );
+        setResult(found ? { status: "verified", program: found.program, year: found.year, name: found.fullName } : { status: "not_found" });
+      })
+      .finally(() => setLoading(false));
   };
 
   return (

@@ -1,4 +1,5 @@
 import { Link, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import Layout from "@/components/layout/Layout";
 import { faculties, programs } from "@/data/content";
 import {
@@ -10,10 +11,13 @@ import {
   ShieldCheck,
   Users,
 } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { fetchProgramById } from "@/store/slices/contentSlice.js";
 
-const getFacultyName = (facultyId) =>
-  faculties.find((faculty) => faculty.id === facultyId)?.name || "";
+const getFacultyName = (facultyId, apiFaculties) =>
+  apiFaculties.find((faculty) => faculty.id === facultyId)?.name ||
+  faculties.find((faculty) => faculty.id === facultyId)?.name ||
+  "";
 
 const getCurriculum = (program) => {
   if (program.curriculum?.length) return program.curriculum;
@@ -28,10 +32,18 @@ const getCurriculum = (program) => {
 
 const ProgramDetail = () => {
   const { programId } = useParams();
+  const dispatch = useDispatch();
+  const apiFaculties = useSelector((state) => state.content.faculties);
+  const apiPrograms = useSelector((state) => state.content.programs);
+  const selectedProgram = useSelector((state) => state.content.selectedProgram);
+
+  useEffect(() => {
+    dispatch(fetchProgramById(programId));
+  }, [dispatch, programId]);
 
   const program = useMemo(
-    () => programs.find((item) => item.id === programId),
-    [programId],
+    () => selectedProgram || apiPrograms.find((item) => String(item.id) === String(programId)) || programs.find((item) => item.id === programId),
+    [programId, selectedProgram, apiPrograms],
   );
 
   if (!program) {
@@ -73,7 +85,7 @@ const ProgramDetail = () => {
     );
   }
 
-  const facultyName = getFacultyName(program.faculty);
+  const facultyName = program.facultyName || getFacultyName(program.faculty, apiFaculties);
   const curriculum = getCurriculum(program);
   const applyUrl = `/student/apply?program=${program.id}&faculty=${program.faculty}`;
   const overviewPoints = program.requirements?.length

@@ -1,10 +1,13 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import Layout from "@/components/layout/Layout";
 import PageHero from "@/components/shared/PageHero";
 import { downloads } from "@/data/content";
 import { Download as DownloadIcon, FileText } from "lucide-react";
 
 const Download = () => {
+  const apiDownloads = useSelector((state) => state.content.downloads);
+  const items = apiDownloads.length ? apiDownloads : downloads;
   const [notice, setNotice] = useState("");
   const onDownload = (title) => {
     setNotice(`${title} will download shortly.`);
@@ -20,7 +23,7 @@ const Download = () => {
               {notice}
             </div>
           )}
-          {downloads.map((cat) => (
+          {items.map((cat) => (
             <div key={cat.category}>
               <h2 className="text-2xl font-bold text-primary mb-5">{cat.category}</h2>
               <div className="grid gap-4 sm:grid-cols-2">
@@ -33,14 +36,26 @@ const Download = () => {
                       <div className="font-semibold text-primary truncate">{item.title}</div>
                       <div className="text-xs text-muted-foreground">PDF · {item.size}</div>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => onDownload(item.title)}
-                      aria-label={`Download ${item.title}`}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-md border text-foreground hover:bg-secondary transition-smooth"
-                    >
-                      <DownloadIcon className="h-4 w-4" />
-                    </button>
+                    {item.url ? (
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`Download ${item.title}`}
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-md border text-foreground hover:bg-secondary transition-smooth"
+                      >
+                        <DownloadIcon className="h-4 w-4" />
+                      </a>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => onDownload(item.title)}
+                        aria-label={`Download ${item.title}`}
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-md border text-foreground hover:bg-secondary transition-smooth"
+                      >
+                        <DownloadIcon className="h-4 w-4" />
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>

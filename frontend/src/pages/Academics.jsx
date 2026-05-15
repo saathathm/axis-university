@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 import Layout from "@/components/layout/Layout";
 import PageHero from "@/components/shared/PageHero";
 import { faculties, programs } from "@/data/content";
@@ -11,18 +12,22 @@ const Academics = () => {
   const [q, setQ] = useState("");
   const [selectedFaculties, setSelectedFaculties] = useState([]);
   const [selectedLevels, setSelectedLevels] = useState([]);
+  const apiFaculties = useSelector((state) => state.content.faculties);
+  const apiPrograms = useSelector((state) => state.content.programs);
+  const facultyItems = apiFaculties.length ? apiFaculties : faculties;
+  const programItems = apiPrograms.length ? apiPrograms : programs;
 
   const toggle = (arr, set, v) =>
     set(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
 
   const filtered = useMemo(() => {
-    return programs.filter((p) => {
+    return programItems.filter((p) => {
       if (q && !p.title.toLowerCase().includes(q.toLowerCase())) return false;
       if (selectedFaculties.length && !selectedFaculties.includes(p.faculty)) return false;
       if (selectedLevels.length && !selectedLevels.includes(p.level)) return false;
       return true;
     });
-  }, [q, selectedFaculties, selectedLevels]);
+  }, [q, selectedFaculties, selectedLevels, programItems]);
 
   const clear = () => { setQ(""); setSelectedFaculties([]); setSelectedLevels([]); };
   const hasFilters = q || selectedFaculties.length || selectedLevels.length;
@@ -49,7 +54,7 @@ const Academics = () => {
             <div className="rounded-2xl border bg-card p-5 shadow-soft">
               <h3 className="font-semibold text-primary mb-3">Faculty</h3>
               <div className="space-y-2">
-                {faculties.map((f) => (
+                {facultyItems.map((f) => (
                   <label key={f.id} className="flex items-center gap-2 cursor-pointer text-sm">
                     <input
                       type="checkbox"
@@ -103,7 +108,7 @@ const Academics = () => {
             ) : (
               <div className="grid gap-5 md:grid-cols-2">
                 {filtered.map((p) => {
-                  const f = faculties.find((x) => x.id === p.faculty) || { name: "" };
+                  const f = facultyItems.find((x) => x.id === p.faculty) || { name: "" };
                   return (
                     <article key={p.id} className="rounded-2xl border bg-card p-6 shadow-soft hover:shadow-elegant hover:-translate-y-0.5 transition-smooth">
                       <div className="flex items-center gap-2 mb-3">
