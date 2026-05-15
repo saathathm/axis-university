@@ -87,7 +87,7 @@ const Academics = () => {
               </div>
             </div>
 
-            {hasFilters && (
+            {hasFilters ? (
               <button
                 type="button"
                 onClick={clear}
@@ -95,7 +95,7 @@ const Academics = () => {
               >
                 <X className="h-4 w-4" /> Clear filters
               </button>
-            )}
+            ) : null}
           </aside>
 
           <div className="min-w-0">
