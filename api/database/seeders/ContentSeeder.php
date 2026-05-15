@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Download;
 use App\Models\News;
+use App\Models\Recognition;
 use Illuminate\Database\Seeder;
 
 class ContentSeeder extends Seeder
@@ -30,6 +31,19 @@ class ContentSeeder extends Seeder
 
         foreach ($downloads as $item) {
             Download::query()->updateOrCreate(['title' => $item['title']], $item);
+        }
+
+        $recognitions = [
+            ['name' => 'Ministry of Higher Education', 'description' => 'Officially licensed and recognized university.', 'sort_order' => 10],
+            ['name' => 'International Quality Council', 'description' => 'Accredited for international academic standards.', 'sort_order' => 20],
+            ['name' => 'Global Universities Network', 'description' => 'Member of a worldwide academic alliance.', 'sort_order' => 30],
+            ['name' => 'QS Stars Rating', 'description' => 'Recognized for teaching, employability and inclusiveness.', 'sort_order' => 40],
+            ['name' => 'ISO 9001:2015', 'description' => 'Certified quality management in education.', 'sort_order' => 50],
+            ['name' => 'European Credit Transfer System', 'description' => 'ECTS-aligned program structure.', 'sort_order' => 60],
+        ];
+
+        foreach ($recognitions as $item) {
+            Recognition::query()->updateOrCreate(['name' => $item['name']], $item + ['published' => true]);
         }
     }
 }

@@ -1,14 +1,23 @@
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Layout from "@/components/layout/Layout";
 import PageHero from "@/components/shared/PageHero";
-import { downloads } from "@/data/content";
+import { EmptyState, LoadingState } from "@/components/shared/ContentState";
+import { fetchDownloads } from "@/store/actions/contentActions.js";
 import { Download as DownloadIcon, FileText } from "lucide-react";
 
 const Download = () => {
-  const apiDownloads = useSelector((state) => state.content.downloads);
-  const items = apiDownloads.length ? apiDownloads : downloads;
+  const dispatch = useDispatch();
+  const downloads = useSelector((state) => state.content.downloads);
+  const status = useSelector((state) => state.content.status.downloads);
   const [notice, setNotice] = useState("");
+
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchDownloads());
+    }
+  }, [dispatch, status]);
+
   const onDownload = (title) => {
     setNotice(`${title} will download shortly.`);
     setTimeout(() => setNotice(""), 2500);
@@ -23,7 +32,11 @@ const Download = () => {
               {notice}
             </div>
           )}
-          {items.map((cat) => (
+          {status === "loading" ? <LoadingState label="Loading downloads..." /> : null}
+          {status !== "loading" && downloads.length === 0 ? (
+            <EmptyState title="No downloads available." description="Publish downloads from the admin panel." />
+          ) : null}
+          {downloads.map((cat) => (
             <div key={cat.category}>
               <h2 className="text-2xl font-bold text-primary mb-5">{cat.category}</h2>
               <div className="grid gap-4 sm:grid-cols-2">

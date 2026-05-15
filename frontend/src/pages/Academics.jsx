@@ -1,10 +1,11 @@
-import { useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Layout from "@/components/layout/Layout";
 import PageHero from "@/components/shared/PageHero";
-import { faculties, programs } from "@/data/content";
+import { EmptyState, LoadingState } from "@/components/shared/ContentState";
 import { Search, Clock, BookOpen, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import { fetchFaculties, fetchPrograms } from "@/store/actions/contentActions.js";
 
 const levels = ["Diploma", "Bachelor", "Master", "PhD"];
 
@@ -12,22 +13,32 @@ const Academics = () => {
   const [q, setQ] = useState("");
   const [selectedFaculties, setSelectedFaculties] = useState([]);
   const [selectedLevels, setSelectedLevels] = useState([]);
-  const apiFaculties = useSelector((state) => state.content.faculties);
-  const apiPrograms = useSelector((state) => state.content.programs);
-  const facultyItems = apiFaculties.length ? apiFaculties : faculties;
-  const programItems = apiPrograms.length ? apiPrograms : programs;
+  const dispatch = useDispatch();
+  const faculties = useSelector((state) => state.content.faculties);
+  const programs = useSelector((state) => state.content.programs);
+  const facultiesStatus = useSelector((state) => state.content.status.faculties);
+  const programsStatus = useSelector((state) => state.content.status.programs);
+
+  useEffect(() => {
+    if (facultiesStatus === "idle") {
+      dispatch(fetchFaculties());
+    }
+    if (programsStatus === "idle") {
+      dispatch(fetchPrograms());
+    }
+  }, [dispatch, facultiesStatus, programsStatus]);
 
   const toggle = (arr, set, v) =>
     set(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
 
   const filtered = useMemo(() => {
-    return programItems.filter((p) => {
+    return programs.filter((p) => {
       if (q && !p.title.toLowerCase().includes(q.toLowerCase())) return false;
       if (selectedFaculties.length && !selectedFaculties.includes(p.faculty)) return false;
       if (selectedLevels.length && !selectedLevels.includes(p.level)) return false;
       return true;
     });
-  }, [q, selectedFaculties, selectedLevels, programItems]);
+  }, [q, selectedFaculties, selectedLevels, programs]);
 
   const clear = () => { setQ(""); setSelectedFaculties([]); setSelectedLevels([]); };
   const hasFilters = q || selectedFaculties.length || selectedLevels.length;
@@ -54,7 +65,7 @@ const Academics = () => {
             <div className="rounded-2xl border bg-card p-5 shadow-soft">
               <h3 className="font-semibold text-primary mb-3">Faculty</h3>
               <div className="space-y-2">
-                {facultyItems.map((f) => (
+                {faculties.map((f) => (
                   <label key={f.id} className="flex items-center gap-2 cursor-pointer text-sm">
                     <input
                       type="checkbox"
@@ -100,15 +111,20 @@ const Academics = () => {
 
           <div className="min-w-0">
             <div className="mb-4 text-sm text-muted-foreground">{filtered.length} program{filtered.length !== 1 && "s"} found</div>
-            {filtered.length === 0 ? (
+            {programsStatus === "loading" ? <LoadingState label="Loading programs..." /> : null}
+            {programsStatus !== "loading" && programs.length === 0 ? (
+              <EmptyState title="No programs available." description="Create programs from the admin panel." />
+            ) : null}
+            {programsStatus !== "loading" && programs.length > 0 && filtered.length === 0 ? (
               <div className="rounded-2xl border border-dashed bg-card p-12 text-center">
                 <BookOpen className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
                 <p className="text-muted-foreground">No programs match your filters. Try adjusting your search.</p>
               </div>
-            ) : (
+            ) : null}
+            {filtered.length > 0 ? (
               <div className="grid gap-5 md:grid-cols-2">
                 {filtered.map((p) => {
-                  const f = facultyItems.find((x) => x.id === p.faculty) || { name: "" };
+                  const f = faculties.find((x) => x.id === p.faculty) || { name: "" };
                   return (
                     <article key={p.id} className="rounded-2xl border bg-card p-6 shadow-soft hover:shadow-elegant hover:-translate-y-0.5 transition-smooth">
                       <div className="flex items-center gap-2 mb-3">
@@ -132,7 +148,7 @@ const Academics = () => {
                   );
                 })}
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </section>

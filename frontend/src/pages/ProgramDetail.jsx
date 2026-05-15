@@ -1,7 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Layout from "@/components/layout/Layout";
-import { faculties, programs } from "@/data/content";
 import {
   BookOpen,
   Clock,
@@ -12,16 +11,11 @@ import {
   Users,
 } from "lucide-react";
 import { useEffect, useMemo } from "react";
-import { fetchProgramById } from "@/store/slices/contentSlice.js";
-
-const getFacultyName = (facultyId, apiFaculties) =>
-  apiFaculties.find((faculty) => faculty.id === facultyId)?.name ||
-  faculties.find((faculty) => faculty.id === facultyId)?.name ||
-  "";
+import { fetchProgramById } from "@/store/actions/contentActions.js";
 
 const getCurriculum = (program) => {
   if (program.curriculum?.length) return program.curriculum;
-  const facultyName = getFacultyName(program.faculty) || "the discipline";
+  const facultyName = program.facultyName || "the discipline";
   return [
     `Introduction to ${facultyName}`,
     "Core Concepts",
@@ -33,7 +27,6 @@ const getCurriculum = (program) => {
 const ProgramDetail = () => {
   const { programId } = useParams();
   const dispatch = useDispatch();
-  const apiFaculties = useSelector((state) => state.content.faculties);
   const apiPrograms = useSelector((state) => state.content.programs);
   const selectedProgram = useSelector((state) => state.content.selectedProgram);
 
@@ -42,7 +35,7 @@ const ProgramDetail = () => {
   }, [dispatch, programId]);
 
   const program = useMemo(
-    () => selectedProgram || apiPrograms.find((item) => String(item.id) === String(programId)) || programs.find((item) => item.id === programId),
+    () => selectedProgram || apiPrograms.find((item) => String(item.id) === String(programId)),
     [programId, selectedProgram, apiPrograms],
   );
 
@@ -85,7 +78,7 @@ const ProgramDetail = () => {
     );
   }
 
-  const facultyName = program.facultyName || getFacultyName(program.faculty, apiFaculties);
+  const facultyName = program.facultyName;
   const curriculum = getCurriculum(program);
   const applyUrl = `/student/apply?program=${program.id}&faculty=${program.faculty}`;
   const overviewPoints = program.requirements?.length

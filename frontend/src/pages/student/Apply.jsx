@@ -1,11 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Layout from "@/components/layout/Layout";
 import PageHero from "@/components/shared/PageHero";
 import { CalendarDays, CheckCircle2, Upload } from "lucide-react";
-import { programs } from "@/data/content";
 import { useSearchParams } from "react-router-dom";
 import { submitApplication } from "@/store/slices/applicationSlice.js";
+import { fetchPrograms } from "@/store/actions/contentActions.js";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -64,21 +64,27 @@ const createInitialForm = (selectedProgramId = "") => ({
 
 const Apply = () => {
   const dispatch = useDispatch();
-  const apiPrograms = useSelector((state) => state.content.programs);
-  const programItems = apiPrograms.length ? apiPrograms : programs;
+  const programs = useSelector((state) => state.content.programs);
+  const programsStatus = useSelector((state) => state.content.status.programs);
   const [searchParams] = useSearchParams();
   const selectedProgramId = searchParams.get("program") || "";
-  const selectedProgram = useMemo(
-    () => programItems.find((program) => String(program.id) === String(selectedProgramId)),
-    [programItems, selectedProgramId],
-  );
 
   const [form, setForm] = useState(() =>
-    createInitialForm(selectedProgram?.id || ""),
+    createInitialForm(selectedProgramId),
   );
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const selectedProgram = useMemo(
+    () => programs.find((program) => String(program.id) === String(form.program)),
+    [form.program, programs],
+  );
+
+  useEffect(() => {
+    if (programsStatus === "idle") {
+      dispatch(fetchPrograms());
+    }
+  }, [dispatch, programsStatus]);
 
   const update = (k, v) => setForm((p) => ({ ...p, [k]: v }));
 

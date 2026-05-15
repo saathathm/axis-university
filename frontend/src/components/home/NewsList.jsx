@@ -1,18 +1,32 @@
 import { Calendar, ArrowRight } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import SectionHeading from "@/components/shared/SectionHeading";
-import { news } from "@/data/content";
+import { EmptyState, LoadingState } from "@/components/shared/ContentState";
+import { fetchNews } from "@/store/actions/contentActions.js";
 
 const NewsList = () => {
-  const apiNews = useSelector((state) => state.content.news);
-  const items = apiNews.length ? apiNews : news;
+  const dispatch = useDispatch();
+  const news = useSelector((state) => state.content.news);
+  const status = useSelector((state) => state.content.status.news);
+
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchNews());
+    }
+  }, [dispatch, status]);
 
   return (
     <section className="py-20 bg-background">
       <div className="container">
         <SectionHeading eyebrow="Stay updated" title="Latest Events & News" description="Highlights from across the Axis University community." />
+        {status === "loading" ? <LoadingState label="Loading news..." /> : null}
+        {status !== "loading" && news.length === 0 ? (
+          <EmptyState title="No news available." description="Publish news from the admin panel." />
+        ) : null}
+        {news.length > 0 ? (
         <div className="grid gap-6 md:grid-cols-3">
-          {items.map((n) => (
+          {news.map((n) => (
             <article key={n.id || n.title} className="group rounded-2xl border bg-card overflow-hidden shadow-soft hover:shadow-elegant hover:-translate-y-1 transition-smooth">
               <div className="aspect-video bg-gradient-primary relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-hero opacity-60" />
@@ -30,6 +44,7 @@ const NewsList = () => {
             </article>
           ))}
         </div>
+        ) : null}
       </div>
     </section>
   );

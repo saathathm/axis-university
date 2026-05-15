@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Admin\DownloadController as AdminDownloadController
 use App\Http\Controllers\Api\Public\DownloadController;
 use App\Http\Controllers\Api\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Api\Public\NewsController;
+use App\Http\Controllers\Api\Public\RecognitionController;
 use App\Http\Controllers\Api\Admin\ProgramController as AdminProgramController;
 use App\Http\Controllers\Api\Admin\StudentController as AdminStudentController;
 use App\Http\Controllers\Api\Admin\TestimonialController as AdminTestimonialController;
@@ -25,6 +26,7 @@ Route::prefix('v1')->group(function (): void {
     Route::get('/testimonials', [TestimonialController::class, 'index']);
     Route::get('/news', [NewsController::class, 'index']);
     Route::get('/downloads', [DownloadController::class, 'index']);
+    Route::get('/recognitions', [RecognitionController::class, 'index']);
     Route::post('/applications', [ApplicationController::class, 'store']);
     Route::get('/certificates/verify', [CertificateController::class, 'verify']);
 
