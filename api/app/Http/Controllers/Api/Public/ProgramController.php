@@ -11,7 +11,21 @@ class ProgramController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $query = Program::query()->with('faculty');
+        $query = Program::query()
+            ->select([
+                'id',
+                'faculty_id',
+                'code',
+                'title',
+                'level',
+                'duration',
+                'overview',
+                'description',
+                'curriculum',
+                'requirements',
+                'intake',
+            ])
+            ->with('faculty:id,name,slug');
 
         if ($request->filled('faculty')) {
             $query->whereHas('faculty', fn ($facultyQuery) => $facultyQuery->where('slug', $request->string('faculty')));
@@ -27,16 +41,31 @@ class ProgramController extends Controller
         }
 
         return response()->json([
-            'data' => $query->paginate(12),
+            'data' => $query->latest()->simplePaginate(12),
         ]);
     }
 
     public function show(string $program): JsonResponse
     {
-        $record = Program::query()->with('faculty')
-            ->where('id', $program)
-            ->orWhereRaw('LOWER(code) = ?', [mb_strtolower($program)])
-            ->firstOrFail();
+        $query = Program::query()
+            ->select([
+                'id',
+                'faculty_id',
+                'code',
+                'title',
+                'level',
+                'duration',
+                'overview',
+                'description',
+                'curriculum',
+                'requirements',
+                'intake',
+            ])
+            ->with('faculty:id,name,slug');
+
+        $record = ctype_digit($program)
+            ? $query->whereKey((int) $program)->firstOrFail()
+            : $query->where('code', mb_strtoupper($program))->firstOrFail();
 
         return response()->json([
             'data' => $record,

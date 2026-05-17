@@ -3,7 +3,6 @@ import HeroSlider from "@/components/home/HeroSlider";
 import FacultiesGrid from "@/components/home/FacultiesGrid";
 import StatsCounter from "@/components/home/StatsCounter";
 import Testimonials from "@/components/home/Testimonials";
-import NewsList from "@/components/home/NewsList";
 import Newsletter from "@/components/home/Newsletter";
 
 const Index = () => {
@@ -13,7 +12,6 @@ const Index = () => {
       <FacultiesGrid />
       <StatsCounter />
       <Testimonials />
-      <NewsList />
       <Newsletter />
     </Layout>
   );

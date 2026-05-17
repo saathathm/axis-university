@@ -11,7 +11,12 @@ class NewsController extends Controller
     public function index(): JsonResponse
     {
         return response()->json([
-            'data' => News::query()->latest('date')->latest()->get(),
+            'data' => News::query()
+                ->select(['id', 'title', 'excerpt', 'body', 'date'])
+                ->latest('date')
+                ->latest()
+                ->limit(12)
+                ->get(),
         ]);
     }
 }

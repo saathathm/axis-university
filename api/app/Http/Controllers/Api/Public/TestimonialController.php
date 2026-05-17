@@ -11,7 +11,12 @@ class TestimonialController extends Controller
     public function index(): JsonResponse
     {
         return response()->json([
-            'data' => Testimonial::query()->where('approved', true)->latest()->get(),
+            'data' => Testimonial::query()
+                ->select(['id', 'name', 'program', 'quote'])
+                ->where('approved', true)
+                ->latest()
+                ->limit(12)
+                ->get(),
         ]);
     }
 }

@@ -12,6 +12,7 @@ class RecognitionController extends Controller
     {
         return response()->json([
             'data' => Recognition::query()
+                ->select(['id', 'name', 'description'])
                 ->where('published', true)
                 ->orderBy('sort_order')
                 ->orderBy('name')

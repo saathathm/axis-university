@@ -7,12 +7,9 @@ import { Search, Clock, BookOpen, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { fetchFaculties, fetchPrograms } from "@/store/actions/contentActions.js";
 
-const levels = ["Diploma", "Bachelor", "Master", "PhD"];
-
 const Academics = () => {
   const [q, setQ] = useState("");
   const [selectedFaculties, setSelectedFaculties] = useState([]);
-  const [selectedLevels, setSelectedLevels] = useState([]);
   const dispatch = useDispatch();
   const faculties = useSelector((state) => state.content.faculties);
   const programs = useSelector((state) => state.content.programs);
@@ -35,13 +32,12 @@ const Academics = () => {
     return programs.filter((p) => {
       if (q && !p.title.toLowerCase().includes(q.toLowerCase())) return false;
       if (selectedFaculties.length && !selectedFaculties.includes(p.faculty)) return false;
-      if (selectedLevels.length && !selectedLevels.includes(p.level)) return false;
       return true;
     });
-  }, [q, selectedFaculties, selectedLevels, programs]);
+  }, [q, selectedFaculties, programs]);
 
-  const clear = () => { setQ(""); setSelectedFaculties([]); setSelectedLevels([]); };
-  const hasFilters = q || selectedFaculties.length || selectedLevels.length;
+  const clear = () => { setQ(""); setSelectedFaculties([]); };
+  const hasFilters = q || selectedFaculties.length;
 
   return (
     <Layout>
@@ -76,25 +72,6 @@ const Academics = () => {
                     <span>{f.name}</span>
                   </label>
                 ))}
-              </div>
-            </div>
-
-            <div className="rounded-2xl border bg-card p-5 shadow-soft">
-              <h3 className="font-semibold text-primary mb-3">Level</h3>
-              <div className="flex flex-wrap gap-2">
-                {levels.map((l) => {
-                  const active = selectedLevels.includes(l);
-                  return (
-                    <button
-                      key={l}
-                      type="button"
-                      onClick={() => toggle(selectedLevels, setSelectedLevels, l)}
-                      className={`rounded-full border px-3 py-1 text-xs font-semibold transition-smooth ${active ? "bg-primary text-primary-foreground border-primary" : "bg-background text-foreground/80 hover:bg-secondary"}`}
-                    >
-                      {l}
-                    </button>
-                  );
-                })}
               </div>
             </div>
 

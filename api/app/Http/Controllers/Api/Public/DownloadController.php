@@ -12,6 +12,7 @@ class DownloadController extends Controller
     public function index(): JsonResponse
     {
         $downloads = Download::query()
+            ->select(['id', 'category', 'title', 'path', 'size'])
             ->where('published', true)
             ->latest()
             ->get()

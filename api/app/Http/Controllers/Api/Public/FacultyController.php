@@ -11,7 +11,10 @@ class FacultyController extends Controller
     public function index(): JsonResponse
     {
         return response()->json([
-            'data' => Faculty::query()->orderBy('name')->get(),
+            'data' => Faculty::query()
+                ->select(['id', 'name', 'slug', 'description', 'icon', 'color'])
+                ->orderBy('name')
+                ->get(),
         ]);
     }
 }

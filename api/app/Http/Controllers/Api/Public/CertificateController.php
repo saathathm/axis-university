@@ -17,7 +17,11 @@ class CertificateController extends Controller
         ]);
 
         $certificate = Certificate::query()
-            ->with(['student', 'program'])
+            ->select(['id', 'cert_id', 'student_id', 'program_id', 'year', 'issued_at'])
+            ->with([
+                'student:id,first_name,last_name',
+                'program:id,title',
+            ])
             ->where('cert_id', $validated['cert_id'])
             ->first();
 
