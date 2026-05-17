@@ -111,9 +111,6 @@ const ProgramDetail = () => {
             </span>
             <div className="mt-5 flex flex-wrap items-center justify-center gap-2 md:justify-start">
               <span className="inline-flex items-center gap-1 rounded-full bg-background/15 px-3 py-1 text-xs font-semibold">
-                <GraduationCap className="h-3.5 w-3.5" /> {program.level}
-              </span>
-              <span className="inline-flex items-center gap-1 rounded-full bg-background/15 px-3 py-1 text-xs font-semibold">
                 <Clock className="h-3.5 w-3.5" /> {program.duration}
               </span>
               <span className="inline-flex items-center gap-1 rounded-full bg-background/15 px-3 py-1 text-xs font-semibold">
@@ -189,12 +186,6 @@ const ProgramDetail = () => {
                 <dd className="font-medium text-foreground">
                   {program.duration}
                 </dd>
-              </div>
-              <div className="flex items-start justify-between gap-4 border-b pb-3">
-                <dt className="inline-flex items-center gap-2 text-muted-foreground">
-                  <BookOpen className="h-4 w-4 text-accent" /> Level
-                </dt>
-                <dd className="font-medium text-foreground">{program.level}</dd>
               </div>
               <div className="flex items-start justify-between gap-4 border-b pb-3">
                 <dt className="inline-flex items-center gap-2 text-muted-foreground">
