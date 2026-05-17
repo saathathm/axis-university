@@ -2,62 +2,100 @@ import { useState } from "react";
 import { Mail } from "lucide-react";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const SUBSCRIBE_DELAY = 600;
 
 const Newsletter = () => {
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formStatus, setFormStatus] = useState(null);
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-    const trimmed = email.trim();
-    if (!emailRegex.test(trimmed)) {
-      setStatus({ type: "error", message: "Please enter a valid email address." });
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+  };
+
+  const showStatus = (type, message) => {
+    setFormStatus({ type, message });
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const trimmedEmail = email.trim();
+
+    if (!emailRegex.test(trimmedEmail)) {
+      showStatus("error", "Please enter a valid email address.");
       return;
     }
-    setLoading(true);
-    setStatus(null);
+
+    setIsSubmitting(true);
+    setFormStatus(null);
+
     setTimeout(() => {
-      setLoading(false);
+      setIsSubmitting(false);
       setEmail("");
-      setStatus({ type: "success", message: "Thanks for joining our newsletter." });
-    }, 600);
+      showStatus("success", "Thanks for joining our newsletter.");
+    }, SUBSCRIBE_DELAY);
   };
 
   return (
     <section className="py-20">
       <div className="container">
-        <div className="rounded-3xl bg-gradient-primary text-primary-foreground p-10 md:p-14 text-center shadow-elegant relative overflow-hidden">
-          <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-accent/30 blur-3xl" aria-hidden="true" />
-          <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-primary-glow/40 blur-3xl" aria-hidden="true" />
-          <div className="relative max-w-2xl mx-auto">
-            <Mail className="mx-auto h-10 w-10 text-accent mb-4" />
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">Stay in the Loop</h2>
-            <p className="text-primary-foreground/85 mb-8">Subscribe to our newsletter for the latest news, events, and admission updates.</p>
-            <form onSubmit={onSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-primary p-10 text-center text-primary-foreground shadow-elegant md:p-14">
+          <div
+            aria-hidden="true"
+            className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-accent/30 blur-3xl"
+          />
+
+          <div
+            aria-hidden="true"
+            className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-primary-glow/40 blur-3xl"
+          />
+
+          <div className="relative mx-auto max-w-2xl">
+            <Mail className="mx-auto mb-4 h-10 w-10 text-accent" />
+
+            <h2 className="mb-3 text-3xl font-bold md:text-4xl">
+              Stay in the Loop
+            </h2>
+
+            <p className="mb-8 text-primary-foreground/85">
+              Subscribe to our newsletter for the latest news, events, and
+              admission updates.
+            </p>
+
+            <form
+              onSubmit={handleSubmit}
+              className="mx-auto flex max-w-md flex-col gap-3 sm:flex-row"
+            >
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
                 placeholder="your@email.com"
                 maxLength={255}
-                className="flex-1 rounded-md border border-input bg-background px-4 py-2 text-sm text-foreground"
                 aria-label="Email address"
+                className="flex-1 rounded-md border border-input bg-background px-4 py-2 text-sm text-foreground"
               />
+
               <button
                 type="submit"
-                disabled={loading}
+                disabled={isSubmitting}
                 className="rounded-md bg-accent px-5 py-2 text-sm font-semibold text-accent-foreground hover:opacity-90 disabled:opacity-60"
               >
-                {loading ? "Subscribing..." : "Subscribe"}
+                {isSubmitting ? "Subscribing..." : "Subscribe"}
               </button>
             </form>
-            {status && (
+
+            {formStatus && (
               <p
-                className={`mt-4 text-sm ${status.type === "error" ? "text-destructive" : "text-accent-foreground"}`}
                 aria-live="polite"
+                className={`mt-4 text-sm ${
+                  formStatus.type === "error"
+                    ? "text-destructive"
+                    : "text-accent-foreground"
+                }`}
               >
-                {status.message}
+                {formStatus.message}
               </p>
             )}
           </div>

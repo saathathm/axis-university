@@ -1,71 +1,128 @@
 import { AlertCircle, CheckCircle2, XCircle } from "lucide-react";
+
 import Modal from "@/components/shared/Modal";
+
+const TITLE_ID = "verification-result-title";
+
+const VerificationCard = ({ type, icon: Icon, title, message, children }) => {
+  const styles = {
+    success: {
+      wrapper: "border-success/30 bg-success/10",
+      icon: "text-success",
+    },
+    error: {
+      wrapper: "border-destructive/30 bg-destructive/10",
+      icon: "text-destructive",
+    },
+  };
+
+  const currentStyle = styles[type];
+
+  return (
+    <div className={`rounded-2xl border p-6 ${currentStyle.wrapper}`}>
+      <div className="flex items-start gap-4">
+        <Icon className={`h-8 w-8 shrink-0 ${currentStyle.icon}`} />
+
+        <div>
+          <h3 id={TITLE_ID} className="text-lg font-bold text-primary">
+            {title}
+          </h3>
+
+          <p className="mt-1 text-sm text-muted-foreground">{message}</p>
+
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const VerifiedDetails = ({ result }) => {
+  const details = [
+    {
+      label: "Name",
+      value: result.name,
+    },
+    {
+      label: "Program",
+      value: result.program,
+    },
+    {
+      label: "Year",
+      value: result.year,
+    },
+  ];
+
+  return (
+    <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+      {details.map((item) => (
+        <div key={item.label}>
+          <dt className="text-muted-foreground">{item.label}</dt>
+          <dd className="font-medium">{item.value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+};
 
 const VerificationResultModal = ({ result, isOpen, onClose }) => {
   if (!result) return null;
 
-  const titleId = "verification-result-title";
-
-  const renderContent = () => {
+  const renderResultContent = () => {
     if (result.status === "validation_error") {
       return (
-        <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-6">
-          <div className="flex items-start gap-4">
-            <AlertCircle className="h-8 w-8 shrink-0 text-destructive" />
-            <div>
-              <h3 id={titleId} className="text-lg font-bold text-primary">Invalid Details</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{result.message}</p>
-            </div>
-          </div>
-        </div>
+        <VerificationCard
+          type="error"
+          icon={AlertCircle}
+          title="Invalid Details"
+          message={result.message}
+        />
       );
     }
 
     if (result.status === "verified") {
       return (
-        <div className="rounded-2xl border border-success/30 bg-success/10 p-6">
-          <div className="flex items-start gap-4">
-            <CheckCircle2 className="h-8 w-8 shrink-0 text-success" />
-            <div>
-              <h3 id={titleId} className="text-lg font-bold text-primary">Certificate Verified</h3>
-              <p className="mt-1 text-sm text-muted-foreground">This certificate is authentic and issued by Axis University.</p>
-              <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                <div><dt className="text-muted-foreground">Name</dt><dd className="font-medium">{result.name}</dd></div>
-                <div><dt className="text-muted-foreground">Program</dt><dd className="font-medium">{result.program}</dd></div>
-                <div><dt className="text-muted-foreground">Year</dt><dd className="font-medium">{result.year}</dd></div>
-              </dl>
-            </div>
-          </div>
-        </div>
+        <VerificationCard
+          type="success"
+          icon={CheckCircle2}
+          title="Certificate Verified"
+          message="This certificate is authentic and issued by Axis University."
+        >
+          <VerifiedDetails result={result} />
+        </VerificationCard>
       );
     }
 
     return (
-      <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-6">
-        <div className="flex items-start gap-4">
-          <XCircle className="h-8 w-8 shrink-0 text-destructive" />
-          <div>
-            <h3 id={titleId} className="text-lg font-bold text-primary">Not Found</h3>
-            <p className="mt-1 text-sm text-muted-foreground">No certificate matches the details provided. Please check and try again, or contact our office.</p>
-          </div>
-        </div>
-      </div>
+      <VerificationCard
+        type="error"
+        icon={XCircle}
+        title="Not Found"
+        message="No certificate matches the details provided. Please check and try again, or contact our office."
+      />
     );
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} titleId={titleId}>
+    <Modal isOpen={isOpen} onClose={onClose} titleId={TITLE_ID}>
       <div className="space-y-4">
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-accent">
             <CheckCircle2 className="h-6 w-6 text-accent-foreground" />
           </div>
+
           <div>
-            <p className="text-sm text-muted-foreground">Certificate Verification Result</p>
-            <h2 className="text-lg font-bold text-primary">Verification Status</h2>
+            <p className="text-sm text-muted-foreground">
+              Certificate Verification Result
+            </p>
+
+            <h2 className="text-lg font-bold text-primary">
+              Verification Status
+            </h2>
           </div>
         </div>
-        {renderContent()}
+
+        {renderResultContent()}
       </div>
     </Modal>
   );

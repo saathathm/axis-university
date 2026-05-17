@@ -1,52 +1,77 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { BookOpen, Clock, Search, X } from "lucide-react";
+
 import Layout from "@/components/layout/Layout";
 import PageHero from "@/components/shared/PageHero";
 import { EmptyState, LoadingState } from "@/components/shared/ContentState";
-import { Search, Clock, BookOpen, X } from "lucide-react";
-import { Link } from "react-router-dom";
 import {
   fetchFaculties,
   fetchPrograms,
 } from "@/store/actions/contentActions.js";
 
 const Academics = () => {
-  const [q, setQ] = useState("");
-  const [selectedFaculties, setSelectedFaculties] = useState([]);
   const dispatch = useDispatch();
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedFaculties, setSelectedFaculties] = useState([]);
+
   const faculties = useSelector((state) => state.content.faculties);
   const programs = useSelector((state) => state.content.programs);
+
   const facultiesStatus = useSelector(
     (state) => state.content.status.faculties,
   );
+
   const programsStatus = useSelector((state) => state.content.status.programs);
+
+  const isProgramsLoading = programsStatus === "loading";
+  const hasPrograms = programs.length > 0;
+  const hasFilters = searchQuery || selectedFaculties.length > 0;
 
   useEffect(() => {
     if (facultiesStatus === "idle") {
       dispatch(fetchFaculties());
     }
+
     if (programsStatus === "idle") {
       dispatch(fetchPrograms());
     }
   }, [dispatch, facultiesStatus, programsStatus]);
 
-  const toggle = (arr, set, v) =>
-    set(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
+  const toggleFaculty = (facultyId) => {
+    setSelectedFaculties((prevFaculties) =>
+      prevFaculties.includes(facultyId)
+        ? prevFaculties.filter((id) => id !== facultyId)
+        : [...prevFaculties, facultyId],
+    );
+  };
 
-  const filtered = useMemo(() => {
-    return programs.filter((p) => {
-      if (q && !p.title.toLowerCase().includes(q.toLowerCase())) return false;
-      if (selectedFaculties.length && !selectedFaculties.includes(p.faculty))
-        return false;
-      return true;
-    });
-  }, [q, selectedFaculties, programs]);
-
-  const clear = () => {
-    setQ("");
+  const clearFilters = () => {
+    setSearchQuery("");
     setSelectedFaculties([]);
   };
-  const hasFilters = q || selectedFaculties.length;
+
+  const filteredPrograms = useMemo(() => {
+    const normalizedSearchQuery = searchQuery.trim().toLowerCase();
+
+    return programs.filter((program) => {
+      const matchesSearch =
+        !normalizedSearchQuery ||
+        program.title.toLowerCase().includes(normalizedSearchQuery);
+
+      const matchesFaculty =
+        selectedFaculties.length === 0 ||
+        selectedFaculties.includes(program.faculty);
+
+      return matchesSearch && matchesFaculty;
+    });
+  }, [programs, searchQuery, selectedFaculties]);
+
+  const showEmptyPrograms = !isProgramsLoading && !hasPrograms;
+  const showNoFilterResults =
+    !isProgramsLoading && hasPrograms && filteredPrograms.length === 0;
 
   return (
     <Layout>
@@ -54,15 +79,17 @@ const Academics = () => {
         title="Academic Programs"
         subtitle="Explore our full catalog of diplomas, bachelor's, master's and doctoral programs."
       />
+
       <section className="py-12">
-        <div className="container grid gap-8 md:grid-cols-[280px_minmax(0,1fr)] items-start">
+        <div className="container grid items-start gap-8 md:grid-cols-[280px_minmax(0,1fr)]">
           <aside className="space-y-6 md:sticky md:top-24">
             <div className="rounded-2xl border bg-card p-5 shadow-soft">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+
                 <input
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
                   placeholder="Search programs..."
                   maxLength={100}
                   className="w-full rounded-md border border-input bg-background py-2 pl-9 pr-3 text-sm"
@@ -71,89 +98,97 @@ const Academics = () => {
             </div>
 
             <div className="rounded-2xl border bg-card p-5 shadow-soft">
-              <h3 className="font-semibold text-primary mb-3">Faculty</h3>
+              <h3 className="mb-3 font-semibold text-primary">Faculty</h3>
+
               <div className="space-y-2">
-                {faculties.map((f) => (
+                {faculties.map((faculty) => (
                   <label
-                    key={f.id}
-                    className="flex items-center gap-2 cursor-pointer text-sm"
+                    key={faculty.id}
+                    className="flex cursor-pointer items-center gap-2 text-sm"
                   >
                     <input
                       type="checkbox"
-                      checked={selectedFaculties.includes(f.id)}
-                      onChange={() =>
-                        toggle(selectedFaculties, setSelectedFaculties, f.id)
-                      }
+                      checked={selectedFaculties.includes(faculty.id)}
+                      onChange={() => toggleFaculty(faculty.id)}
                       className="h-4 w-4 rounded accent-primary"
                     />
-                    <span>{f.name}</span>
+
+                    <span>{faculty.name}</span>
                   </label>
                 ))}
               </div>
             </div>
 
-            {hasFilters ? (
+            {hasFilters && (
               <button
                 type="button"
-                onClick={clear}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm text-foreground/80 hover:bg-secondary transition-smooth"
+                onClick={clearFilters}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm text-foreground/80 transition-smooth hover:bg-secondary"
               >
-                <X className="h-4 w-4" /> Clear filters
+                <X className="h-4 w-4" />
+                Clear filters
               </button>
-            ) : null}
+            )}
           </aside>
 
           <div className="min-w-0">
             <div className="mb-4 text-sm text-muted-foreground">
-              {filtered.length} program{filtered.length !== 1 && "s"} found
+              {filteredPrograms.length} program
+              {filteredPrograms.length !== 1 && "s"} found
             </div>
-            {programsStatus === "loading" ? (
-              <LoadingState label="Loading programs..." />
-            ) : null}
-            {programsStatus !== "loading" && programs.length === 0 ? (
+
+            {isProgramsLoading && <LoadingState label="Loading programs..." />}
+
+            {showEmptyPrograms && (
               <EmptyState
                 title="No programs available."
                 description="Create programs from the admin panel."
               />
-            ) : null}
-            {programsStatus !== "loading" &&
-            programs.length > 0 &&
-            filtered.length === 0 ? (
+            )}
+
+            {showNoFilterResults && (
               <div className="rounded-2xl border border-dashed bg-card p-12 text-center">
-                <BookOpen className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+                <BookOpen className="mx-auto mb-3 h-10 w-10 text-muted-foreground" />
+
                 <p className="text-muted-foreground">
                   No programs match your filters. Try adjusting your search.
                 </p>
               </div>
-            ) : null}
-            {filtered.length > 0 ? (
+            )}
+
+            {filteredPrograms.length > 0 && (
               <div className="grid gap-5 md:grid-cols-2">
-                {filtered.map((p) => {
-                  const f = faculties.find((x) => x.id === p.faculty) || {
-                    name: "",
-                  };
+                {filteredPrograms.map((program) => {
+                  const faculty = faculties.find(
+                    (item) => item.id === program.faculty,
+                  );
+
                   return (
                     <article
-                      key={p.id}
-                      className="rounded-2xl border bg-card p-6 shadow-soft hover:shadow-elegant hover:-translate-y-0.5 transition-smooth"
+                      key={program.id}
+                      className="rounded-2xl border bg-card p-6 shadow-soft transition-smooth hover:-translate-y-0.5 hover:shadow-elegant"
                     >
-                      <div className="flex items-center gap-2 mb-3">
+                      <div className="mb-3 flex items-center gap-2">
                         <span className="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold text-muted-foreground">
-                          <Clock className="h-3 w-3 mr-1" />
-                          {p.duration}
+                          <Clock className="mr-1 h-3 w-3" />
+                          {program.duration}
                         </span>
                       </div>
-                      <h3 className="text-lg font-semibold text-primary mb-1">
-                        {p.title}
+
+                      <h3 className="mb-1 text-lg font-semibold text-primary">
+                        {program.title}
                       </h3>
-                      <p className="text-xs text-muted-foreground mb-2">
-                        {f.name}
+
+                      <p className="mb-2 text-xs text-muted-foreground">
+                        {faculty?.name || ""}
                       </p>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        {p.description}
+
+                      <p className="mb-4 text-sm text-muted-foreground">
+                        {program.description}
                       </p>
+
                       <Link
-                        to={`/academics/${p.id}`}
+                        to={`/academics/${program.id}`}
                         className="inline-flex items-center justify-center rounded-md bg-gradient-accent px-4 py-2 text-xs font-semibold text-accent-foreground"
                       >
                         View Course
@@ -162,7 +197,7 @@ const Academics = () => {
                   );
                 })}
               </div>
-            ) : null}
+            )}
           </div>
         </div>
       </section>
