@@ -2,21 +2,24 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Recognition extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'name',
+        'title',
+        'organization_name',
         'description',
-        'sort_order',
-        'published',
+        'photo',
+        'issue_date',
+        'status',
     ];
 
     protected $casts = [
-        'published' => 'boolean',
+        'issue_date' => 'date',
+        'status' => 'boolean',
     ];
 }

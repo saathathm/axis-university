@@ -2,30 +2,45 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Application extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'uuid','first_name','last_name','passport_number','date_of_birth','contact_number','street_address','town_city','country','postcode','email_address','program_id','faculty_id','attachments','status','admin_note','processed_by','submitted_at','processed_at'
+        'application_number',
+        'first_name',
+        'last_name',
+        'passport_number',
+        'date_of_birth',
+        'contact_number',
+        'street_address',
+        'town_city',
+        'country',
+        'postcode',
+        'email_address',
+        'course_id',
+        'status',
+        'admin_note',
+        'submitted_at',
+        'reviewed_at',
     ];
 
     protected $casts = [
-        'attachments' => 'array',
+        'date_of_birth' => 'date',
         'submitted_at' => 'datetime',
-        'processed_at' => 'datetime',
+        'reviewed_at' => 'datetime',
     ];
 
-    public function program()
+    public function course()
     {
-        return $this->belongsTo(Program::class);
+        return $this->belongsTo(Course::class);
     }
 
-    public function faculty()
+    public function enrollment()
     {
-        return $this->belongsTo(Faculty::class);
+        return $this->hasOne(Enrollment::class);
     }
 }

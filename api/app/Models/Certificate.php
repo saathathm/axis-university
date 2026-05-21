@@ -2,27 +2,53 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Certificate extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['cert_id','student_id','program_id','year','issued_at','meta'];
+    protected $fillable = [
+        'certificate_number',
+        'enrollment_id',
+        'issue_date',
+        'expiry_date',
+        'grade',
+        'status',
+    ];
 
     protected $casts = [
-        'meta' => 'array',
-        'issued_at' => 'datetime',
+        'issue_date' => 'date',
+        'expiry_date' => 'date',
     ];
+
+    public function enrollment()
+    {
+        return $this->belongsTo(Enrollment::class);
+    }
 
     public function student()
     {
-        return $this->belongsTo(Student::class);
+        return $this->hasOneThrough(
+            Student::class,
+            Enrollment::class,
+            'id',
+            'id',
+            'enrollment_id',
+            'student_id'
+        );
     }
 
-    public function program()
+    public function course()
     {
-        return $this->belongsTo(Program::class);
+        return $this->hasOneThrough(
+            Course::class,
+            Enrollment::class,
+            'id',
+            'id',
+            'enrollment_id',
+            'course_id'
+        );
     }
 }

@@ -2,26 +2,63 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Student extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['student_number','application_id','first_name','last_name','passport_number','date_of_birth','contact_number','street_address','town_city','country','postcode','email','program_id','enrolled_at','status'];
-
-    protected $casts = [
-        'enrolled_at' => 'datetime',
+    protected $fillable = [
+        'student_number',
+        'first_name',
+        'last_name',
+        'email_address',
+        'contact_number',
+        'passport_number',
+        'date_of_birth',
+        'street_address',
+        'town_city',
+        'country',
+        'postcode',
+        'status',
     ];
 
-    public function program()
+    protected $casts = [
+        'date_of_birth' => 'date',
+    ];
+
+    public function enrollments()
     {
-        return $this->belongsTo(Program::class);
+        return $this->hasMany(Enrollment::class);
     }
 
-    public function application()
+    public function courses()
     {
-        return $this->belongsTo(Application::class);
+        return $this->belongsToMany(Course::class, 'enrollments')
+            ->withPivot([
+                'enrollment_number',
+                'application_id',
+                'enrollment_date',
+                'start_date',
+                'end_date',
+                'completion_date',
+                'status',
+                'grade',
+                'admin_note',
+            ])
+            ->withTimestamps();
+    }
+
+    public function certificates()
+    {
+        return $this->hasManyThrough(
+            Certificate::class,
+            Enrollment::class,
+            'student_id',
+            'enrollment_id',
+            'id',
+            'id'
+        );
     }
 }

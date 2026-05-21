@@ -1,53 +1,62 @@
 <?php
 
-use App\Http\Controllers\Api\Admin\ApplicationController as AdminApplicationController;
-use App\Http\Controllers\Api\Admin\AuthController;
-use App\Http\Controllers\Api\Admin\CertificateController as AdminCertificateController;
-use App\Http\Controllers\Api\Admin\FacultyController as AdminFacultyController;
-use App\Http\Controllers\Api\Admin\DownloadController as AdminDownloadController;
-use App\Http\Controllers\Api\Public\DownloadController;
-use App\Http\Controllers\Api\Admin\NewsController as AdminNewsController;
-use App\Http\Controllers\Api\Public\NewsController;
-use App\Http\Controllers\Api\Public\RecognitionController;
-use App\Http\Controllers\Api\Admin\ProgramController as AdminProgramController;
-use App\Http\Controllers\Api\Admin\StudentController as AdminStudentController;
-use App\Http\Controllers\Api\Admin\TestimonialController as AdminTestimonialController;
-use App\Http\Controllers\Api\Public\ApplicationController;
-use App\Http\Controllers\Api\Public\CertificateController;
-use App\Http\Controllers\Api\Public\FacultyController;
-use App\Http\Controllers\Api\Public\ProgramController;
-use App\Http\Controllers\Api\Public\TestimonialController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CourseController;
+use App\Http\Controllers\Api\FacultyController;
+use App\Http\Controllers\Api\StudentController;
+use App\Http\Controllers\Api\DownloadController;
+use App\Http\Controllers\Api\EnrollmentController;
+use App\Http\Controllers\Api\CertificateController;
+use App\Http\Controllers\Api\ApplicationController;
+use App\Http\Controllers\Api\TestimonialController;
+use App\Http\Controllers\Api\RecognitionController;
 
-Route::prefix('v1')->group(function (): void {
-    Route::get('/faculties', [FacultyController::class, 'index']);
-    Route::get('/programs', [ProgramController::class, 'index']);
-    Route::get('/programs/{program}', [ProgramController::class, 'show']);
-    Route::get('/testimonials', [TestimonialController::class, 'index']);
-    Route::get('/news', [NewsController::class, 'index']);
-    Route::get('/downloads', [DownloadController::class, 'index']);
-    Route::get('/recognitions', [RecognitionController::class, 'index']);
-    Route::post('/applications', [ApplicationController::class, 'store']);
-    Route::get('/certificates/verify', [CertificateController::class, 'verify']);
+Route::post('/login', [AuthController::class, 'login']);
 
-    Route::prefix('admin')->group(function (): void {
-        Route::post('/login', [AuthController::class, 'login']);
+// Public application submit
+Route::post('/applications', [ApplicationController::class, 'store']);
 
-        Route::middleware(['auth:api', 'admin'])->group(function (): void {
-            Route::post('/logout', [AuthController::class, 'logout']);
-            Route::post('/refresh', [AuthController::class, 'refresh']);
-            Route::get('/profile', [AuthController::class, 'profile']);
+// Public readable routes
+Route::get('/faculties', [FacultyController::class, 'index']);
+Route::get('/faculties/{faculty}', [FacultyController::class, 'show']);
 
-            Route::apiResource('faculties', AdminFacultyController::class);
-            Route::apiResource('programs', AdminProgramController::class);
-            Route::apiResource('applications', AdminApplicationController::class)->except(['store']);
-            Route::post('/applications/{application}/approve', [AdminApplicationController::class, 'approve']);
-            Route::post('/applications/{application}/reject', [AdminApplicationController::class, 'reject']);
-            Route::apiResource('students', AdminStudentController::class);
-            Route::apiResource('certificates', AdminCertificateController::class);
-            Route::apiResource('testimonials', AdminTestimonialController::class);
-            Route::apiResource('news', AdminNewsController::class);
-            Route::apiResource('downloads', AdminDownloadController::class);
-        });
+Route::get('/courses', [CourseController::class, 'index']);
+Route::get('/courses/{course}', [CourseController::class, 'show']);
+
+Route::get('/certificates', [CertificateController::class, 'index']);
+Route::get('/certificates/{certificate}', [CertificateController::class, 'show']);
+
+Route::get('/downloads', [DownloadController::class, 'index']);
+Route::get('/downloads/{download}', [DownloadController::class, 'show']);
+
+Route::get('/recognitions', [RecognitionController::class, 'index']);
+Route::get('/recognitions/{recognition}', [RecognitionController::class, 'show']);
+
+Route::get('/testimonials', [TestimonialController::class, 'index']);
+Route::get('/testimonials/{testimonial}', [TestimonialController::class, 'show']);
+
+Route::middleware(['auth:api'])->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'me']);
+
+    Route::middleware('can:manage-admin-data')->group(function () {
+        // Admin create/update/delete only
+        Route::apiResource('/faculties', FacultyController::class)->except(['index', 'show']);
+        Route::apiResource('/courses', CourseController::class)->except(['index', 'show']);
+        Route::apiResource('/certificates', CertificateController::class)->except(['index', 'show']);
+        Route::apiResource('/downloads', DownloadController::class)->except(['index', 'show']);
+        Route::apiResource('/recognitions', RecognitionController::class)->except(['index', 'show']);
+        Route::apiResource('/testimonials', TestimonialController::class)->except(['index', 'show']);
+
+        // Admin only
+        Route::apiResource('/students', StudentController::class);
+        Route::apiResource('/enrollments', EnrollmentController::class);
+
+        // Admin application management
+        Route::get('/applications', [ApplicationController::class, 'index']);
+        Route::get('/applications/{application}', [ApplicationController::class, 'show']);
+        Route::patch('/applications/{application}/approve', [ApplicationController::class, 'approve']);
+        Route::patch('/applications/{application}/reject', [ApplicationController::class, 'reject']);
     });
 });

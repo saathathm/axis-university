@@ -1,18 +1,18 @@
 # Dependencies
 node_modules/
-backend/node_modules/
-frontend/node_modules/
+api/node_modules/
+client/node_modules/
 
 # Environment files
 .env
 .env.*
 !.env.example
-backend/.env
-backend/.env.*
-!backend/.env.example
-frontend/.env
-frontend/.env.*
-!frontend/.env.example
+api/.env
+api/.env.*
+!api/.env.example
+client/.env
+client/.env.*
+!client/.env.example
 
 # Logs
 npm-debug.log*
@@ -39,11 +39,9 @@ Thumbs.db
 .idea/
 
 # Uploads and generated media
-backend/uploads/**
-!backend/uploads/.gitkeep
-!backend/uploads/**/.gitkeep
+api/uploads/**
+!api/uploads/.gitkeep
+!api/uploads/**/.gitkeep
 
 # Prisma artifacts
-backend/prisma/dev.db*
-
-client
+api/prisma/dev.db*

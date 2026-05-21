@@ -1,220 +1,66 @@
-# Axis University Backend
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-This directory contains the Laravel API backend for the Axis University portal frontend.
+<p align="center">
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+</p>
 
-The frontend expects an API-driven backend with:
-- Laravel
-- MySQL
-- JWT authentication for the admin user
-- Public endpoints for site content and application submission
-- Admin endpoints for managing faculties, courses, applications, students, certificates, testimonials, and other content
+## About Laravel
 
-## System Architecture
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- React/Vite frontend consumes JSON APIs from Laravel
-- Laravel provides public and admin API routes
-- MySQL stores persistent data
-- JWT protects admin routes
-- Files such as application attachments are stored with Laravel Storage
-- Queue workers handle emails and background jobs
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-## Role Model
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-Only one authenticated role is required now:
-- `admin`
+## Learning Laravel
 
-Students do not log in. They submit application forms publicly.
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-## Core Models
+You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-- `User`
-  - Admin account only
-  - Fields: `name`, `email`, `password`, `role`
+If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-- `Faculty`
-  - Fields: `name`, `slug`, `description`, `icon`, `color`
-  - Relationships: hasMany `Program`
+## Laravel Sponsors
 
-- `Program`
-  - Fields: `faculty_id`, `code`, `title`, `level`, `duration`, `overview`, `description`, `curriculum`, `requirements`, `intake`
-  - Relationships: belongsTo `Faculty`, hasMany `Application`, hasMany `Student`
+We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
 
-- `Application`
-  - Fields: applicant details, `program_id`, `faculty_id`, `attachments`, `status`, `admin_note`, `processed_by`, `submitted_at`, `processed_at`
-  - Relationships: belongsTo `Program`, belongsTo `Faculty`
-  - Statuses: `pending`, `approved`, `rejected`
+### Premium Partners
 
-- `Student`
-  - Fields: `student_number`, `application_id`, applicant details, `program_id`, `enrolled_at`, `status`
-  - Relationship: belongsTo `Program`, belongsTo `Application`
+- **[Vehikl](https://vehikl.com/)**
+- **[Tighten Co.](https://tighten.co)**
+- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+- **[64 Robots](https://64robots.com)**
+- **[Cubet Techno Labs](https://cubettech.com)**
+- **[Cyber-Duck](https://cyber-duck.co.uk)**
+- **[Many](https://www.many.co.uk)**
+- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
+- **[DevSquad](https://devsquad.com)**
+- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
+- **[OP.GG](https://op.gg)**
+- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
+- **[Lendio](https://lendio.com)**
 
-- `Certificate`
-  - Fields: `cert_id`, `student_id`, `program_id`, `year`, `issued_at`, `meta`
-  - Relationship: belongsTo `Student`
+## Contributing
 
-- `Testimonial`
-  - Fields: `name`, `program`, `quote`, `approved`
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-- Optional support tables
-  - `downloads`
-  - `news`
-  - `settings`
+## Code of Conduct
 
-## Database Tables
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-Suggested tables:
+## Security Vulnerabilities
 
-- `users`
-- `faculties`
-- `programs`
-- `applications`
-- `students`
-- `certificates`
-- `testimonials`
-- `downloads`
-- `news`
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-Important constraints:
+## License
 
-- `faculties.slug` must be unique
-- `applications.uuid` must be unique
-- `students.student_number` must be unique
-- `certificates.cert_id` must be unique
-- Add indexes on search fields such as applicant email, passport number, and certificate ID
-
-## Approval Flow
-
-1. Student submits an application publicly.
-2. Application is stored with `status = pending`.
-3. Admin reviews the application in the admin panel.
-4. If approved:
-   - Update application status to `approved`
-   - Store the admin decision and timestamp
-   - Create a record in `students`
-5. If rejected:
-   - Update application status to `rejected`
-   - Store rejection note if needed
-
-## API Endpoints
-
-Base path: `/api`
-
-Public endpoints:
-
-- `GET /api/faculties`
-- `GET /api/programs`
-- `GET /api/programs/{id}`
-- `GET /api/testimonials`
-- `GET /api/news`
-- `GET /api/downloads`
-- `POST /api/applications`
-- `GET /api/certificates/verify`
-
-Admin endpoints:
-
-- `POST /api/admin/login`
-- `POST /api/admin/logout`
-- `POST /api/admin/refresh`
-- `GET /api/admin/profile`
-- `GET /api/admin/faculties`
-- `POST /api/admin/faculties`
-- `PUT /api/admin/faculties/{id}`
-- `DELETE /api/admin/faculties/{id}`
-- `GET /api/admin/programs`
-- `POST /api/admin/programs`
-- `PUT /api/admin/programs/{id}`
-- `DELETE /api/admin/programs/{id}`
-- `GET /api/admin/applications`
-- `GET /api/admin/applications/{id}`
-- `POST /api/admin/applications/{id}/approve`
-- `POST /api/admin/applications/{id}/reject`
-- `GET /api/admin/students`
-- `POST /api/admin/students`
-- `PUT /api/admin/students/{id}`
-- `DELETE /api/admin/students/{id}`
-- `GET /api/admin/certificates`
-- `POST /api/admin/certificates`
-- `GET /api/admin/testimonials`
-- `POST /api/admin/testimonials`
-
-## JWT Authentication Flow
-
-1. Admin submits email and password to `/api/admin/login`.
-2. Laravel validates credentials.
-3. Server returns a JWT token.
-4. Admin requests must include `Authorization: Bearer <token>`.
-5. Middleware protects admin routes.
-6. An admin-only middleware checks that the authenticated user has role `admin`.
-
-Recommended package:
-- `php-open-source-saver/jwt-auth` (compatible drop-in replacement)
-
-## Folder Structure
-
-Recommended Laravel structure inside `api/`:
-
-```text
-app/
-  Http/
-    Controllers/
-      Api/
-        Public/
-        Admin/
-    Requests/
-    Resources/
-  Models/
-  Services/
-  Actions/
-database/
-  migrations/
-  seeders/
-routes/
-  api.php
-```
-
-## Setup Notes
-
-Install dependencies:
-
-```bash
-composer install
-```
-
-Configure `.env`:
-
-- `DB_CONNECTION=mysql`
-- `DB_HOST`
-- `DB_PORT`
-- `DB_DATABASE`
-- `DB_USERNAME`
-- `DB_PASSWORD`
-- `JWT_SECRET`
-
-Run migrations and seeders:
-
-```bash
-php artisan migrate
-php artisan db:seed
-```
-
-Generate JWT secret if using `php-open-source-saver/jwt-auth`:
-
-```bash
-php artisan jwt:secret
-```
-
-## Implementation Suggestions
-
-- Use Form Requests for validation.
-- Use API Resources for consistent JSON responses.
-- Move business logic into Services or Actions.
-- Use queues for emails and notifications.
-- Add rate limiting to public endpoints.
-- Add pagination to list endpoints.
-
-## Next Steps
-
-I can scaffold the missing Laravel files next:
-- seeders for faculties, programs, and testimonials
-- JWT auth configuration and admin seeder
-- controllers for public and admin APIs
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
