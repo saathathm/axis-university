@@ -30,10 +30,10 @@ import Faculties from "./pages/admin/Faculties.jsx";
 import Courses from "./pages/admin/Courses.jsx";
 import Certificates from "./pages/admin/Certificates.jsx";
 import Downloads from "./pages/admin/Downloads.jsx";
-// import Testimonials from "./pages/admin/Testimonials.jsx";
-// import RecognitionsAdmin from "./pages/admin/Recognitions.jsx";
-// import Messages from "./pages/admin/Messages.jsx";
-// import NewsletterSubscriptions from "./pages/admin/NewsletterSubscriptions.jsx";
+import Testimonials from "./pages/admin/Testimonials.jsx";
+import RecognitionsAdmin from "./pages/admin/Recognitions.jsx";
+import Messages from "./pages/admin/Messages.jsx";
+import NewsletterSubscriptions from "./pages/admin/NewsletterSubscriptions.jsx";
 
 function App() {
   const dispatch = useDispatch();
@@ -77,13 +77,13 @@ function App() {
             <Route path="/admin/courses" element={<Courses />} />
             <Route path="/admin/certificates" element={<Certificates />} />
             <Route path="/admin/downloads" element={<Downloads />} />
-            {/* <Route path="/admin/testimonials" element={<Testimonials />} />
+            <Route path="/admin/testimonials" element={<Testimonials />} />
             <Route path="/admin/recognitions" element={<RecognitionsAdmin />} />
             <Route path="/admin/messages" element={<Messages />} />
             <Route
               path="/admin/newsletter-subscriptions"
               element={<NewsletterSubscriptions />}
-            /> */}
+            />
           </Route>
         </Route>
       </Routes>
