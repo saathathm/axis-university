@@ -6,6 +6,7 @@ use App\Models\Certificate;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
 class CertificateController extends Controller
 {
@@ -77,18 +78,34 @@ class CertificateController extends Controller
         return $this->successResponse(null, 'Certificate deleted successfully');
     }
 
-    public function verify(Request $request)
+    public function verify($certificateNumber)
     {
-        $request->validate([
-            'certificateNumber' => ['required', 'string'],
-        ]);
+        $validator = Validator::make(
+            ['certificateNumber' => $certificateNumber],
+            [
+                'certificateNumber' => ['required', 'string'],
+            ]
+        );
 
-        $certificate = Certificate::with('enrollment.student', 'enrollment.course')
-            ->where('certificate_number', $request->certificateNumber)
+        if ($validator->fails()) {
+            return $this->errorResponse('Invalid certificate number', 422, $validator->errors());
+        }
+
+        $certificate = Certificate::with([
+            'enrollment.student',
+            'enrollment.course.faculty',
+        ])
+            ->where('certificate_number', $certificateNumber)
             ->first();
 
         if (!$certificate) {
             return $this->errorResponse('Certificate not found', 404);
+        }
+
+        if ($certificate->status !== 'valid') {
+            return $this->errorResponse('Certificate is not valid', 422, [
+                'status' => $certificate->status,
+            ]);
         }
 
         return $this->successResponse($certificate, 'Certificate verified successfully');

@@ -653,6 +653,9 @@ Public read:
 |---|---|
 | GET | `/api/courses` |
 | GET | `/api/courses/{course}` |
+| GET | `/api/courses?search=software  |
+| GET | `/api/courses?facultyId=1  |
+| GET | `/api/courses?search=software&facultyId=1  |
 
 Admin write:
 

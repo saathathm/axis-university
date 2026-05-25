@@ -7,10 +7,15 @@ export const LoadingState = ({ label = "Loading content..." }) => (
   </div>
 );
 
-export const EmptyState = ({ title = "No content available.", description }) => (
+export const EmptyState = ({
+  title = "No content available.",
+  description,
+}) => (
   <div className="rounded-2xl border border-dashed bg-card p-10 text-center shadow-soft">
     <AlertCircle className="mx-auto mb-3 h-6 w-6 text-muted-foreground" />
     <h3 className="font-semibold text-primary">{title}</h3>
-    {description && <p className="mt-2 text-sm text-muted-foreground">{description}</p>}
+    {description && (
+      <p className="mt-2 text-sm text-muted-foreground">{description}</p>
+    )}
   </div>
 );

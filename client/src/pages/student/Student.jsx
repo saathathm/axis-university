@@ -7,8 +7,7 @@ import {
   Send,
 } from "lucide-react";
 
-import Layout from "@/components/layout/Layout";
-import PageHero from "@/components/widgets/PageHero";
+import PageHero from "../../components/widgets/PageHero";
 
 const studentLinks = [
   {
@@ -27,7 +26,7 @@ const studentLinks = [
 
 const Student = () => {
   return (
-    <Layout>
+    <>
       <PageHero
         title="Student Information"
         subtitle="Everything you need to start and succeed at Axis University."
@@ -63,7 +62,7 @@ const Student = () => {
           })}
         </div>
       </section>
-    </Layout>
+    </>
   );
 };
 

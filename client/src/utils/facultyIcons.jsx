@@ -1,4 +1,11 @@
-import { Briefcase, Cpu, GraduationCap, HeartPulse, Palette, Scale } from "lucide-react";
+import {
+  Briefcase,
+  Cpu,
+  GraduationCap,
+  HeartPulse,
+  Palette,
+  Scale,
+} from "lucide-react";
 
 const icons = {
   Briefcase,

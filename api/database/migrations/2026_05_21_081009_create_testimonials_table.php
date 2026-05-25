@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('role')->nullable();
+            $table->string('course');
             $table->text('message');
             $table->string('photo')->nullable();
             $table->unsignedTinyInteger('rating')->nullable();

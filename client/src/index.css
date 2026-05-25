@@ -1,10 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @theme inline {
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -124,7 +120,7 @@
     background-image:
       radial-gradient(circle at top left, hsl(184 74% 46% / 0.08), transparent 40%),
       radial-gradient(circle at top right, hsl(220 67% 27% / 0.12), transparent 42%),
-      linear-gradient(180deg, hsl(var(--background)), hsl(210 30% 97%));
+      linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
     color: hsl(var(--foreground));
     font-family: 'Inter', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;

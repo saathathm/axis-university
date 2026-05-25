@@ -24,6 +24,7 @@ class TestimonialController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'role' => ['nullable', 'string', 'max:255'],
+            'course' => ['required', 'string', 'max:255'],
             'message' => ['required', 'string'],
             'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'rating' => ['nullable', 'integer', 'min:1', 'max:5'],
@@ -39,6 +40,7 @@ class TestimonialController extends Controller
         $testimonial = Testimonial::create([
             'name' => $validated['name'],
             'role' => $validated['role'] ?? null,
+            'course' => $validated['course'],
             'message' => $validated['message'],
             'photo' => $photo,
             'rating' => $validated['rating'] ?? null,
@@ -58,6 +60,7 @@ class TestimonialController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'role' => ['nullable', 'string', 'max:255'],
+            'course' => ['required', 'string', 'max:255'],
             'message' => ['required', 'string'],
             'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'rating' => ['nullable', 'integer', 'min:1', 'max:5'],
@@ -74,6 +77,7 @@ class TestimonialController extends Controller
         $testimonial->update([
             'name' => $validated['name'],
             'role' => $validated['role'] ?? null,
+            'course' => $validated['course'],
             'message' => $validated['message'],
             'photo' => $photo,
             'rating' => $validated['rating'] ?? null,

@@ -1,74 +1,93 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
-import ScrollToTop from "./components/ScrollToTop.jsx";
-import RequireAdmin from "./components/admin/RequireAdmin.jsx";
+import Layout from "./components/layout/Layout.jsx";
+import AdminLayout from "./components/admin/AdminLayout.jsx";
+import ProtectedRoute from "./components/admin/ProtectedRoute.jsx";
 
-import Index from "./pages/Index.jsx";
-import About from "./pages/About.jsx";
-import Recognitions from "./pages/Recognitions.jsx";
-import Academics from "./pages/Academics.jsx";
-import ProgramDetail from "./pages/ProgramDetail.jsx";
-import Download from "./pages/Download.jsx";
-import Contact from "./pages/Contact.jsx";
-import Verify from "./pages/Verify.jsx";
-import NotFound from "./pages/NotFound.jsx";
+import ScrollToTop from "./utils/ScrollToTop.jsx";
 
+import { loadUser } from "./features/auth/authActions.js";
+
+import Home from "./pages/student/Home.jsx";
+import About from "./pages/student/About.jsx";
+import Recognitions from "./pages/student/Recognitions.jsx";
+import Academics from "./pages/student/Academics.jsx";
+import ProgramDetail from "./pages/student/ProgramDetail.jsx";
 import Student from "./pages/student/Student.jsx";
-import Policies from "./pages/student/Policies.jsx";
-import Apply from "./pages/student/Apply.jsx";
+import Apply from "./components/student/Apply.jsx";
+import Policies from "./components/student/Policies.jsx";
+import Contact from "./pages/student/Contact.jsx";
+import Verify from "./pages/student/Verify.jsx";
 
-import AdminLogin from "./pages/admin/Login.jsx";
-import AdminDashboard from "./pages/admin/Dashboard.jsx";
-import AdminApplications from "./pages/admin/Applications.jsx";
-import AdminFaculties from "./pages/admin/Faculties.jsx";
-import AdminPrograms from "./pages/admin/Programs.jsx";
-import AdminTestimonials from "./pages/admin/Testimonials.jsx";
-import AdminStudents from "./pages/admin/Students.jsx";
-import AdminCertificates from "./pages/admin/Certificates.jsx";
-import AdminNews from "./pages/admin/News.jsx";
-import AdminDownloads from "./pages/admin/Downloads.jsx";
-
-const routerConfig = {
-  v7_startTransition: true,
-  v7_relativeSplatPath: true,
-};
+import Login from "./pages/admin/Login.jsx";
+import Dashboard from "./pages/admin/Dashboard.jsx";
+import Applications from "./pages/admin/Applications.jsx";
+import Students from "./pages/admin/Students.jsx";
+import Enrollments from "./pages/admin/Enrollments.jsx";
+import Faculties from "./pages/admin/Faculties.jsx";
+import Courses from "./pages/admin/Courses.jsx";
+import Certificates from "./pages/admin/Certificates.jsx";
+import Downloads from "./pages/admin/Downloads.jsx";
+// import Testimonials from "./pages/admin/Testimonials.jsx";
+// import RecognitionsAdmin from "./pages/admin/Recognitions.jsx";
+// import Messages from "./pages/admin/Messages.jsx";
+// import NewsletterSubscriptions from "./pages/admin/NewsletterSubscriptions.jsx";
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      dispatch(loadUser());
+    }
+  }, [dispatch]);
+
   return (
-    <BrowserRouter future={routerConfig}>
+    <Router>
       <ScrollToTop />
 
       <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/recognitions" element={<Recognitions />} />
-        <Route path="/academics" element={<Academics />} />
-        <Route path="/academics/:programId" element={<ProgramDetail />} />
-        <Route path="/download" element={<Download />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/verify" element={<Verify />} />
-
-        <Route path="/student" element={<Student />} />
-        <Route path="/student/policies" element={<Policies />} />
-        <Route path="/student/apply" element={<Apply />} />
-
-        <Route path="/admin/login" element={<AdminLogin />} />
-
-        <Route element={<RequireAdmin />}>
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/applications" element={<AdminApplications />} />
-          <Route path="/admin/faculties" element={<AdminFaculties />} />
-          <Route path="/admin/programs" element={<AdminPrograms />} />
-          <Route path="/admin/testimonials" element={<AdminTestimonials />} />
-          <Route path="/admin/students" element={<AdminStudents />} />
-          <Route path="/admin/certificates" element={<AdminCertificates />} />
-          <Route path="/admin/news" element={<AdminNews />} />
-          <Route path="/admin/downloads" element={<AdminDownloads />} />
+        {/* Public user website */}
+        <Route element={<Layout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/recognitions" element={<Recognitions />} />
+          <Route path="/academics" element={<Academics />} />
+          <Route path="/academics/:programId" element={<ProgramDetail />} />
+          <Route path="/student" element={<Student />} />
+          <Route path="/student/policies" element={<Policies />} />
+          <Route path="/student/apply" element={<Apply />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/verify" element={<Verify />} />
         </Route>
 
-        <Route path="*" element={<NotFound />} />
+        {/* Admin login without admin layout */}
+        <Route path="/admin/login" element={<Login />} />
+
+        {/* Protected admin panel */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<AdminLayout />}>
+            <Route path="/admin" element={<Dashboard />} />
+            <Route path="/admin/applications" element={<Applications />} />
+            <Route path="/admin/students" element={<Students />} />
+            <Route path="/admin/enrollments" element={<Enrollments />} />
+            <Route path="/admin/faculties" element={<Faculties />} />
+            <Route path="/admin/courses" element={<Courses />} />
+            <Route path="/admin/certificates" element={<Certificates />} />
+            <Route path="/admin/downloads" element={<Downloads />} />
+            {/* <Route path="/admin/testimonials" element={<Testimonials />} />
+            <Route path="/admin/recognitions" element={<RecognitionsAdmin />} />
+            <Route path="/admin/messages" element={<Messages />} />
+            <Route
+              path="/admin/newsletter-subscriptions"
+              element={<NewsletterSubscriptions />}
+            /> */}
+          </Route>
+        </Route>
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
 

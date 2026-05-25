@@ -1,20 +1,61 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Mail } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+
+import { createNewsletterSubscription } from "../../features/newsletter/newsletterActions";
+import {
+  clearNewsletterError,
+  clearNewsletterMessage,
+} from "../../features/newsletter/newsletterSlice";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const SUBSCRIBE_DELAY = 600;
 
 const Newsletter = () => {
+  const dispatch = useDispatch();
+
+  const { loading, message, error } = useSelector(
+    (state) => state.newsletterState,
+  );
+
   const [email, setEmail] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formStatus, setFormStatus] = useState(null);
+
+  useEffect(() => {
+    if (message) {
+      setEmail("");
+      setFormStatus({
+        type: "success",
+        message,
+      });
+
+      dispatch(clearNewsletterMessage());
+    }
+  }, [dispatch, message]);
+
+  useEffect(() => {
+    if (error) {
+      setFormStatus({
+        type: "error",
+        message: error,
+      });
+
+      dispatch(clearNewsletterError());
+    }
+  }, [dispatch, error]);
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
+
+    if (formStatus) {
+      setFormStatus(null);
+    }
   };
 
-  const showStatus = (type, message) => {
-    setFormStatus({ type, message });
+  const showStatus = (type, statusMessage) => {
+    setFormStatus({
+      type,
+      message: statusMessage,
+    });
   };
 
   const handleSubmit = (event) => {
@@ -27,14 +68,7 @@ const Newsletter = () => {
       return;
     }
 
-    setIsSubmitting(true);
-    setFormStatus(null);
-
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setEmail("");
-      showStatus("success", "Thanks for joining our newsletter.");
-    }, SUBSCRIBE_DELAY);
+    dispatch(createNewsletterSubscription(trimmedEmail));
   };
 
   return (
@@ -74,15 +108,16 @@ const Newsletter = () => {
                 placeholder="your@email.com"
                 maxLength={255}
                 aria-label="Email address"
-                className="flex-1 rounded-md border border-input bg-background px-4 py-2 text-sm text-foreground"
+                disabled={loading}
+                className="flex-1 rounded-md border border-input bg-background px-4 py-2 text-sm text-foreground disabled:opacity-60"
               />
 
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={loading}
                 className="rounded-md bg-accent px-5 py-2 text-sm font-semibold text-accent-foreground hover:opacity-90 disabled:opacity-60"
               >
-                {isSubmitting ? "Subscribing..." : "Subscribe"}
+                {loading ? "Subscribing..." : "Subscribe"}
               </button>
             </form>
 

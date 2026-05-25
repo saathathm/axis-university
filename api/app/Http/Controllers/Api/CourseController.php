@@ -12,9 +12,30 @@ class CourseController extends Controller
 {
     use ApiResponse;
 
-    public function index()
+    public function index(Request $request)
     {
+        $request->validate([
+            'search' => ['nullable', 'string', 'max:255'],
+            'facultyId' => ['nullable', 'exists:faculties,id'],
+        ]);
+
         $courses = Course::with('faculty')
+            ->when($request->search, function ($query) use ($request) {
+                $search = $request->search;
+
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('code', 'like', "%{$search}%")
+                        ->orWhere('level', 'like', "%{$search}%")
+                        ->orWhere('duration', 'like', "%{$search}%")
+                        ->orWhere('study_mode', 'like', "%{$search}%")
+                        ->orWhere('short_description', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+                });
+            })
+            ->when($request->facultyId, function ($query) use ($request) {
+                $query->where('faculty_id', $request->facultyId);
+            })
             ->latest()
             ->paginate(10);
 
@@ -52,12 +73,19 @@ class CourseController extends Controller
             'status' => $validated['status'] ?? true,
         ]);
 
+
         return $this->successResponse($course, 'Course created successfully', 201);
     }
 
     public function show(Course $course)
     {
-        $course->load('faculty', 'downloads', 'applications', 'enrollments.student');
+        $course->load([
+            'faculty',
+            'downloads',
+            'curriculums' => function ($query) {
+                $query->where('status', true)->orderBy('sort_order');
+            },
+        ]);
 
         return $this->successResponse($course, 'Course fetched successfully');
     }

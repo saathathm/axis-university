@@ -1,6 +1,6 @@
 import { AlertCircle, CheckCircle2, XCircle } from "lucide-react";
 
-import Modal from "@/components/widgets/Modal";
+import Modal from "./Modal";
 
 const TITLE_ID = "verification-result-title";
 
@@ -37,28 +37,55 @@ const VerificationCard = ({ type, icon: Icon, title, message, children }) => {
   );
 };
 
-const VerifiedDetails = ({ result }) => {
+const VerifiedDetails = ({ certificate }) => {
+  const student = certificate?.enrollment?.student;
+  const course = certificate?.enrollment?.course;
+
+  const studentName = student
+    ? `${student.first_name || ""} ${student.last_name || ""}`.trim()
+    : "-";
+
   const details = [
     {
-      label: "Name",
-      value: result.name,
+      label: "Certificate No",
+      value: certificate?.certificate_number || "-",
     },
     {
-      label: "Program",
-      value: result.program,
+      label: "Student Name",
+      value: studentName || "-",
     },
     {
-      label: "Year",
-      value: result.year,
+      label: "Course",
+      value: course?.name || "-",
+    },
+    {
+      label: "Level",
+      value: course?.level || "-",
+    },
+    {
+      label: "Grade",
+      value: certificate?.grade || "-",
+    },
+    {
+      label: "Issue Date",
+      value: formatDate(certificate?.issue_date),
+    },
+    {
+      label: "Expiry Date",
+      value: formatDate(certificate?.expiry_date),
+    },
+    {
+      label: "Status",
+      value: certificate?.status || "-",
     },
   ];
 
   return (
-    <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+    <dl className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
       {details.map((item) => (
         <div key={item.label}>
           <dt className="text-muted-foreground">{item.label}</dt>
-          <dd className="font-medium">{item.value}</dd>
+          <dd className="font-medium capitalize">{item.value}</dd>
         </div>
       ))}
     </dl>
@@ -74,7 +101,7 @@ const VerificationResultModal = ({ result, isOpen, onClose }) => {
         <VerificationCard
           type="error"
           icon={AlertCircle}
-          title="Invalid Details"
+          title="Invalid Certificate"
           message={result.message}
         />
       );
@@ -88,7 +115,7 @@ const VerificationResultModal = ({ result, isOpen, onClose }) => {
           title="Certificate Verified"
           message="This certificate is authentic and issued by Axis University."
         >
-          <VerifiedDetails result={result} />
+          <VerifiedDetails certificate={result.data} />
         </VerificationCard>
       );
     }
@@ -98,7 +125,7 @@ const VerificationResultModal = ({ result, isOpen, onClose }) => {
         type="error"
         icon={XCircle}
         title="Not Found"
-        message="No certificate matches the details provided. Please check and try again, or contact our office."
+        message="No certificate matches the number provided. Please check and try again, or contact our office."
       />
     );
   };
@@ -126,6 +153,16 @@ const VerificationResultModal = ({ result, isOpen, onClose }) => {
       </div>
     </Modal>
   );
+};
+
+const formatDate = (date) => {
+  if (!date) return "-";
+
+  return new Date(date).toLocaleDateString("en-GB", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  });
 };
 
 export default VerificationResultModal;

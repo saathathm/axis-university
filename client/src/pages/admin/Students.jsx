@@ -1,204 +1,461 @@
-import { useEffect, useState } from "react";
-import AdminLayout from "@/components/admin/AdminLayout";
-import api from "@/utils/axiosInstance";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  Eye,
+  GraduationCap,
+  Mail,
+  Phone,
+  Search,
+  UserRound,
+  Users,
+} from "lucide-react";
 
-const initialForm = {
-  first_name: "",
-  last_name: "",
-  contact_number: "",
-  street_address: "",
-  town_city: "",
-  country: "",
-  postcode: "",
-  email: "",
-  program_id: "",
-  status: "active",
-};
+import { getStudents } from "../../features/student/studentActions";
 
-const AdminStudents = () => {
-  const [items, setItems] = useState([]);
-  const [programs, setPrograms] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [editingId, setEditingId] = useState(null);
-  const [form, setForm] = useState(initialForm);
+const Students = () => {
+  const dispatch = useDispatch();
 
-  const loadStudents = async () => {
-    setLoading(true);
-    setError("");
+  const {
+    students = [],
+    loading,
+    error,
+  } = useSelector((state) => state.studentState);
 
-    try {
-      const [studentsResponse, programsResponse] = await Promise.all([
-        api.get("/admin/students"),
-        api.get("/admin/programs"),
-      ]);
-
-      setItems(studentsResponse.data.data?.data ?? studentsResponse.data.data ?? []);
-      setPrograms(programsResponse.data.data?.data ?? programsResponse.data.data ?? []);
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to load students.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [selectedStudent, setSelectedStudent] = useState(null);
 
   useEffect(() => {
-    loadStudents();
-  }, []);
+    dispatch(getStudents());
+  }, [dispatch]);
 
-  const resetForm = () => {
-    setEditingId(null);
-    setForm(initialForm);
-  };
+  const filteredStudents = useMemo(() => {
+    return students.filter((student) => {
+      const searchText = search.trim().toLowerCase();
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setSaving(true);
-    setError("");
+      const fullName = `${student.first_name || ""} ${
+        student.last_name || ""
+      }`.toLowerCase();
 
-    try {
-      if (editingId) {
-        await api.put(`/admin/students/${editingId}`, form);
-      } else {
-        await api.post("/admin/students", form);
-      }
-      resetForm();
-      await loadStudents();
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to save student.");
-    } finally {
-      setSaving(false);
-    }
-  };
+      const matchesSearch =
+        !searchText ||
+        fullName.includes(searchText) ||
+        student.email_address?.toLowerCase().includes(searchText) ||
+        student.student_number?.toLowerCase().includes(searchText) ||
+        student.passport_number?.toLowerCase().includes(searchText) ||
+        student.contact_number?.toLowerCase().includes(searchText);
 
-  const handleEdit = (item) => {
-    setEditingId(item.id);
-    setForm({
-      first_name: item.first_name || "",
-      last_name: item.last_name || "",
-      contact_number: item.contact_number || "",
-      street_address: item.street_address || "",
-      town_city: item.town_city || "",
-      country: item.country || "",
-      postcode: item.postcode || "",
-      email: item.email || "",
-      program_id: item.program_id ? String(item.program_id) : "",
-      status: item.status || "active",
+      const matchesStatus = !statusFilter || student.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
     });
-  };
+  }, [students, search, statusFilter]);
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete this student?")) {
-      return;
-    }
-
-    try {
-      await api.delete(`/admin/students/${id}`);
-      await loadStudents();
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to delete student.");
-    }
-  };
+  const counts = useMemo(() => {
+    return {
+      total: students.length,
+      active: students.filter((student) => student.status === "active").length,
+      inactive: students.filter((student) => student.status === "inactive")
+        .length,
+      suspended: students.filter((student) => student.status === "suspended")
+        .length,
+    };
+  }, [students]);
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
-        <div className="rounded-3xl border bg-card p-8 shadow-soft">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">Records</p>
-          <h1 className="mt-2 text-3xl font-bold text-primary">Students</h1>
-          <p className="mt-3 text-muted-foreground">Review and maintain enrolled student records.</p>
-        </div>
+    <div className="space-y-6">
+      <section className="rounded-3xl border bg-card p-6 shadow-soft">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">
+              Students
+            </p>
 
-        <form onSubmit={handleSubmit} className="rounded-3xl border bg-card p-6 shadow-soft space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className="text-sm font-medium text-foreground" htmlFor="student-first">First name</label>
-              <input id="student-first" value={form.first_name} onChange={(event) => setForm((current) => ({ ...current, first_name: event.target.value }))} className="mt-1 w-full rounded-md border bg-background px-4 py-3 text-sm" required />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground" htmlFor="student-last">Last name</label>
-              <input id="student-last" value={form.last_name} onChange={(event) => setForm((current) => ({ ...current, last_name: event.target.value }))} className="mt-1 w-full rounded-md border bg-background px-4 py-3 text-sm" required />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground" htmlFor="student-contact">Contact number</label>
-              <input id="student-contact" value={form.contact_number} onChange={(event) => setForm((current) => ({ ...current, contact_number: event.target.value }))} className="mt-1 w-full rounded-md border bg-background px-4 py-3 text-sm" />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground" htmlFor="student-email">Email</label>
-              <input id="student-email" type="email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} className="mt-1 w-full rounded-md border bg-background px-4 py-3 text-sm" />
-            </div>
-            <div className="md:col-span-2">
-              <label className="text-sm font-medium text-foreground" htmlFor="student-address">Street address</label>
-              <input id="student-address" value={form.street_address} onChange={(event) => setForm((current) => ({ ...current, street_address: event.target.value }))} className="mt-1 w-full rounded-md border bg-background px-4 py-3 text-sm" />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground" htmlFor="student-city">Town / city</label>
-              <input id="student-city" value={form.town_city} onChange={(event) => setForm((current) => ({ ...current, town_city: event.target.value }))} className="mt-1 w-full rounded-md border bg-background px-4 py-3 text-sm" />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground" htmlFor="student-country">Country</label>
-              <input id="student-country" value={form.country} onChange={(event) => setForm((current) => ({ ...current, country: event.target.value }))} className="mt-1 w-full rounded-md border bg-background px-4 py-3 text-sm" />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground" htmlFor="student-postcode">Postcode</label>
-              <input id="student-postcode" value={form.postcode} onChange={(event) => setForm((current) => ({ ...current, postcode: event.target.value }))} className="mt-1 w-full rounded-md border bg-background px-4 py-3 text-sm" />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground" htmlFor="student-program">Program</label>
-              <select id="student-program" value={form.program_id} onChange={(event) => setForm((current) => ({ ...current, program_id: event.target.value }))} className="mt-1 w-full rounded-md border bg-background px-4 py-3 text-sm">
-                <option value="">Choose a program</option>
-                {programs.map((program) => (
-                  <option key={program.id} value={program.id}>{program.title}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground" htmlFor="student-status">Status</label>
-              <select id="student-status" value={form.status} onChange={(event) => setForm((current) => ({ ...current, status: event.target.value }))} className="mt-1 w-full rounded-md border bg-background px-4 py-3 text-sm" required>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
-            </div>
+            <h1 className="mt-2 text-2xl font-bold text-primary md:text-3xl">
+              Student Records
+            </h1>
+
+            <p className="mt-2 text-sm text-muted-foreground">
+              View accepted students, contact details, and their enrollment
+              summary.
+            </p>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            <button type="submit" disabled={saving} className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-60">
-              {saving ? "Saving..." : editingId ? "Update Student" : "Create Student"}
-            </button>
-            {editingId && (
-              <button type="button" onClick={resetForm} className="rounded-full border px-5 py-2 text-sm font-semibold text-foreground hover:bg-secondary">
-                Cancel edit
-              </button>
-            )}
+          <div className="grid gap-3 sm:grid-cols-4 lg:min-w-[560px]">
+            <StudentCount label="Total" value={counts.total} />
+            <StudentCount label="Active" value={counts.active} />
+            <StudentCount label="Inactive" value={counts.inactive} />
+            <StudentCount label="Suspended" value={counts.suspended} />
           </div>
-        </form>
-
-        {error && <div className="rounded-2xl border bg-card p-4 text-sm text-destructive shadow-soft">{error}</div>}
-
-        <div className="space-y-4">
-          {loading && <div className="rounded-2xl border bg-card p-6 text-sm text-muted-foreground shadow-soft">Loading students...</div>}
-          {!loading && items.length === 0 && <div className="rounded-2xl border bg-card p-6 text-sm text-muted-foreground shadow-soft">No students found.</div>}
-          {items.map((item) => (
-            <article key={item.id} className="rounded-2xl border bg-card p-6 shadow-soft space-y-4">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <div className="text-xs uppercase tracking-[0.3em] text-accent">{item.student_number || "No student number"}</div>
-                  <h2 className="mt-2 text-xl font-semibold text-primary">{item.first_name} {item.last_name}</h2>
-                  <p className="mt-2 text-sm text-muted-foreground">{item.email || "No email"} · {item.status}</p>
-                </div>
-                <div className="flex gap-2">
-                  <button type="button" onClick={() => handleEdit(item)} className="rounded-full border px-4 py-2 text-sm font-semibold hover:bg-secondary">Edit</button>
-                  <button type="button" onClick={() => handleDelete(item.id)} className="rounded-full border border-destructive/40 px-4 py-2 text-sm font-semibold text-destructive hover:bg-destructive/10">Delete</button>
-                </div>
-              </div>
-              <div className="text-sm text-muted-foreground">Program: {item.program?.title || item.program_id || "Not assigned"}</div>
-            </article>
-          ))}
         </div>
-      </div>
-    </AdminLayout>
+      </section>
+
+      <section className="rounded-3xl border bg-card p-5 shadow-soft">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+
+            <input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search by name, email, student no, passport, or contact..."
+              className="w-full rounded-2xl border bg-background px-11 py-3 text-sm outline-none transition-smooth focus:border-accent"
+            />
+          </div>
+
+          <select
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
+            className="rounded-2xl border bg-background px-4 py-3 text-sm outline-none transition-smooth focus:border-accent"
+          >
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="suspended">Suspended</option>
+          </select>
+        </div>
+
+        {error && (
+          <div className="mt-4 rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            {error}
+          </div>
+        )}
+      </section>
+
+      <section className="overflow-hidden rounded-3xl border bg-card shadow-soft">
+        <div className="border-b px-6 py-5">
+          <h2 className="text-lg font-bold text-primary">Students</h2>
+
+          <p className="mt-1 text-sm text-muted-foreground">
+            Showing {filteredStudents.length} of {students.length} students.
+          </p>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[1050px] text-left text-sm">
+            <thead className="bg-secondary/60 text-xs uppercase tracking-wide text-muted-foreground">
+              <tr>
+                <th className="px-5 py-4">Student</th>
+                <th className="px-5 py-4">Contact</th>
+                <th className="px-5 py-4">Passport</th>
+                <th className="px-5 py-4">Location</th>
+                <th className="px-5 py-4">Enrollments</th>
+                <th className="px-5 py-4">Status</th>
+                <th className="px-5 py-4">Joined</th>
+                <th className="px-5 py-4 text-right">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y">
+              {loading ? (
+                <tr>
+                  <td
+                    colSpan="8"
+                    className="bg-background px-5 py-10 text-center text-muted-foreground"
+                  >
+                    Loading students...
+                  </td>
+                </tr>
+              ) : filteredStudents.length > 0 ? (
+                filteredStudents.map((student) => (
+                  <tr key={student.id} className="bg-background">
+                    <td className="px-5 py-4">
+                      <div className="flex items-start gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-accent-soft text-accent">
+                          <UserRound className="h-5 w-5" />
+                        </div>
+
+                        <div>
+                          <div className="font-semibold text-foreground">
+                            {student.first_name} {student.last_name}
+                          </div>
+
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            {student.student_number || `STU-${student.id}`}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Mail className="h-4 w-4 text-accent" />
+                        {student.email_address || "-"}
+                      </div>
+
+                      <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                        <Phone className="h-3.5 w-3.5 text-accent" />
+                        {student.contact_number || "-"}
+                      </div>
+                    </td>
+
+                    <td className="px-5 py-4 text-muted-foreground">
+                      {student.passport_number || "-"}
+                    </td>
+
+                    <td className="px-5 py-4 text-muted-foreground">
+                      <div>{student.town_city || "-"}</div>
+                      <div className="mt-1 text-xs">
+                        {student.country || ""}
+                      </div>
+                    </td>
+
+                    <td className="px-5 py-4">
+                      <EnrollmentSummary student={student} />
+                    </td>
+
+                    <td className="px-5 py-4">
+                      <StatusBadge status={student.status} />
+                    </td>
+
+                    <td className="px-5 py-4 text-muted-foreground">
+                      {formatDate(student.created_at)}
+                    </td>
+
+                    <td className="px-5 py-4">
+                      <div className="flex justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedStudent(student)}
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-full border bg-card text-foreground transition-smooth hover:bg-secondary"
+                          title="View student"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="8"
+                    className="bg-background px-5 py-10 text-center text-muted-foreground"
+                  >
+                    No students found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {selectedStudent && (
+        <StudentDetailsModal
+          student={selectedStudent}
+          onClose={() => setSelectedStudent(null)}
+        />
+      )}
+    </div>
   );
 };
 
-export default AdminStudents;
+const StudentCount = ({ label, value }) => {
+  return (
+    <div className="rounded-2xl border bg-background p-4">
+      <p className="text-2xl font-extrabold text-primary">{value}</p>
+
+      <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </p>
+    </div>
+  );
+};
+
+const EnrollmentSummary = ({ student }) => {
+  const enrollments = Array.isArray(student.enrollments)
+    ? student.enrollments
+    : [];
+
+  if (enrollments.length === 0) {
+    return <span className="text-muted-foreground">No enrollments</span>;
+  }
+
+  const activeCount = enrollments.filter(
+    (enrollment) => enrollment.status === "active",
+  ).length;
+
+  return (
+    <div>
+      <div className="inline-flex items-center gap-2 font-semibold text-foreground">
+        <GraduationCap className="h-4 w-4 text-accent" />
+        {enrollments.length} course{enrollments.length > 1 ? "s" : ""}
+      </div>
+
+      <p className="mt-1 text-xs text-muted-foreground">
+        {activeCount} active enrollment{activeCount === 1 ? "" : "s"}
+      </p>
+    </div>
+  );
+};
+
+const StatusBadge = ({ status }) => {
+  const normalizedStatus = status || "unknown";
+
+  const styles = {
+    active: "border-success/20 bg-success/10 text-success",
+    inactive: "border-border bg-secondary text-muted-foreground",
+    suspended: "border-destructive/20 bg-destructive/10 text-destructive",
+    completed: "border-success/20 bg-success/10 text-success",
+    withdrawn: "border-destructive/20 bg-destructive/10 text-destructive",
+    unknown: "border-border bg-secondary text-muted-foreground",
+  };
+
+  return (
+    <span
+      className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold capitalize ${
+        styles[normalizedStatus] || styles.unknown
+      }`}
+    >
+      {normalizedStatus}
+    </span>
+  );
+};
+
+const StudentDetailsModal = ({ student, onClose }) => {
+  const enrollments = Array.isArray(student.enrollments)
+    ? student.enrollments
+    : [];
+
+  const details = [
+    {
+      label: "Student No",
+      value: student.student_number,
+    },
+    {
+      label: "Name",
+      value: `${student.first_name || ""} ${student.last_name || ""}`.trim(),
+    },
+    {
+      label: "Email",
+      value: student.email_address,
+    },
+    {
+      label: "Contact",
+      value: student.contact_number,
+    },
+    {
+      label: "Passport",
+      value: student.passport_number,
+    },
+    {
+      label: "Date of Birth",
+      value: formatDate(student.date_of_birth),
+    },
+    {
+      label: "Street Address",
+      value: student.street_address,
+    },
+    {
+      label: "Town / City",
+      value: student.town_city,
+    },
+    {
+      label: "Country",
+      value: student.country,
+    },
+    {
+      label: "Postcode",
+      value: student.postcode,
+    },
+    {
+      label: "Status",
+      value: student.status,
+    },
+    {
+      label: "Created At",
+      value: formatDate(student.created_at),
+    },
+  ];
+
+  return (
+    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/45 p-4">
+      <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-3xl border bg-card p-6 shadow-soft">
+        <div className="flex items-start justify-between gap-4 border-b pb-4">
+          <div>
+            <h2 className="text-xl font-bold text-primary">Student Details</h2>
+
+            <p className="mt-1 text-sm text-muted-foreground">
+              Student profile and enrollment information.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full border bg-background px-4 py-2 text-sm font-semibold transition-smooth hover:bg-secondary"
+          >
+            Close
+          </button>
+        </div>
+
+        <dl className="mt-5 grid gap-4 sm:grid-cols-2">
+          {details.map((item) => (
+            <div
+              key={item.label}
+              className="rounded-2xl border bg-background p-4"
+            >
+              <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {item.label}
+              </dt>
+
+              <dd className="mt-1 break-words text-sm font-medium text-foreground capitalize">
+                {item.value || "-"}
+              </dd>
+            </div>
+          ))}
+        </dl>
+
+        <div className="mt-6 rounded-2xl border bg-background p-5">
+          <h3 className="text-lg font-bold text-primary">Enrollments</h3>
+
+          <div className="mt-4 space-y-3">
+            {enrollments.length > 0 ? (
+              enrollments.map((enrollment) => (
+                <div
+                  key={enrollment.id}
+                  className="rounded-2xl border bg-card p-4"
+                >
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <p className="font-semibold text-foreground">
+                        {enrollment.course?.name || "Course"}
+                      </p>
+
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Enrollment No: {enrollment.enrollment_number || "-"}
+                      </p>
+
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Date: {formatDate(enrollment.enrollment_date)}
+                      </p>
+                    </div>
+
+                    <StatusBadge status={enrollment.status} />
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                This student does not have enrollments yet.
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const formatDate = (date) => {
+  if (!date) return "-";
+
+  return new Date(date).toLocaleDateString("en-GB", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  });
+};
+
+export default Students;

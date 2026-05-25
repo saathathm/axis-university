@@ -11,19 +11,31 @@ use App\Http\Controllers\Api\CertificateController;
 use App\Http\Controllers\Api\ApplicationController;
 use App\Http\Controllers\Api\TestimonialController;
 use App\Http\Controllers\Api\RecognitionController;
+use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\NewsletterSubscriptionController;
+use App\Http\Controllers\Api\CourseCurriculumController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
 // Public application submit
 Route::post('/applications', [ApplicationController::class, 'store']);
 
+// Public newsletter subscription submit
+Route::post('/newsletter-subscriptions', [NewsletterSubscriptionController::class, 'store']);
+
+// Public contact message submit
+Route::post('/messages', [MessageController::class, 'store']);
+
 // Public readable routes
 Route::get('/faculties', [FacultyController::class, 'index']);
 Route::get('/faculties/{faculty}', [FacultyController::class, 'show']);
 
 Route::get('/courses', [CourseController::class, 'index']);
+Route::get('/courses/{course}/curriculums', [CourseCurriculumController::class, 'index']);
 Route::get('/courses/{course}', [CourseController::class, 'show']);
 
+// Certificate verify route must come before /certificates/{certificate}
+Route::get('/certificates/verify/{certificateNumber}', [CertificateController::class, 'verify']);
 Route::get('/certificates', [CertificateController::class, 'index']);
 Route::get('/certificates/{certificate}', [CertificateController::class, 'show']);
 
@@ -49,9 +61,22 @@ Route::middleware(['auth:api'])->group(function () {
         Route::apiResource('/recognitions', RecognitionController::class)->except(['index', 'show']);
         Route::apiResource('/testimonials', TestimonialController::class)->except(['index', 'show']);
 
+        // Admin course curriculum management
+        Route::post('/courses/{course}/curriculums', [CourseCurriculumController::class, 'store']);
+        Route::get('/course-curriculums/{courseCurriculum}', [CourseCurriculumController::class, 'show']);
+        Route::put('/course-curriculums/{courseCurriculum}', [CourseCurriculumController::class, 'update']);
+        Route::patch('/course-curriculums/{courseCurriculum}', [CourseCurriculumController::class, 'update']);
+        Route::delete('/course-curriculums/{courseCurriculum}', [CourseCurriculumController::class, 'destroy']);
+
         // Admin only
         Route::apiResource('/students', StudentController::class);
         Route::apiResource('/enrollments', EnrollmentController::class);
+
+        // Admin newsletter subscription management
+        Route::apiResource('/newsletter-subscriptions', NewsletterSubscriptionController::class)->except(['store']);
+
+        // Admin message management
+        Route::apiResource('/messages', MessageController::class)->except(['store']);
 
         // Admin application management
         Route::get('/applications', [ApplicationController::class, 'index']);
