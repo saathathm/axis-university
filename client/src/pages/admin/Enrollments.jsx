@@ -16,9 +16,11 @@ import {
   deleteEnrollment,
 } from "../../features/enrollment/enrollmentActions";
 import StatCard from "../../components/widgets/StatCard";
+import { useNavigate } from "react-router-dom";
 
 const Enrollments = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const {
     enrollments = [],
@@ -109,6 +111,7 @@ const Enrollments = () => {
 
           <button
             type="button"
+            onClick={() => navigate("/admin/enrollments/create")}
             className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-accent px-5 py-3 text-sm font-semibold text-accent-foreground shadow-soft transition-smooth hover:opacity-90"
           >
             <Plus className="h-4 w-4" />

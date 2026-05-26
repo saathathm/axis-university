@@ -1,33 +1,32 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ArrowLeft, Save, UserPlus } from "lucide-react";
+import { ArrowLeft, GraduationCap, Save } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
-import { createStudent } from "../../../features/student/studentActions";
+import Select from "react-select";
 
 import { getCourses } from "../../../features/course/courseActions";
+import { createEnrollment } from "../../../features/enrollment/enrollmentActions";
+import { getStudents } from "../../../features/student/studentActions";
 import SearchableSelect from "../../../components/widgets/SearchableSelect";
 
-const CreateStudent = () => {
+const CreateEnrollment = () => {
   const dispatch = useDispatch();
-
   const navigate = useNavigate();
+
+  const { students = [] } = useSelector((state) => state.studentState);
 
   const { courses = [] } = useSelector((state) => state.courseState);
 
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    emailAddress: "",
-    contactNumber: "",
-    passportNumber: "",
-    dateOfBirth: "",
-    streetAddress: "",
-    townCity: "",
-    country: "",
-    postcode: "",
-    status: "active",
+    studentId: "",
     courseId: "",
+    enrollmentDate: "",
+    startDate: "",
+    endDate: "",
+    completionDate: "",
+    status: "active",
+    grade: "",
+    adminNote: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -36,6 +35,8 @@ const CreateStudent = () => {
 
   useEffect(() => {
     dispatch(getCourses());
+
+    dispatch(getStudents());
   }, [dispatch]);
 
   const handleChange = (event) => {
@@ -55,62 +56,24 @@ const CreateStudent = () => {
 
       setError("");
 
-      await dispatch(createStudent(formData));
+      await dispatch(createEnrollment(formData));
 
-      navigate("/admin/students");
+      navigate("/admin/enrollments");
     } catch (err) {
-      setError(err || "Failed to create student");
+      setError(err || "Failed to create enrollment");
     } finally {
       setLoading(false);
     }
   };
 
-  const countryOptions = [
-    "Afghanistan",
-    "Algeria",
-    "Argentina",
-    "Australia",
-    "Bangladesh",
-    "Brazil",
-    "Canada",
-    "China",
-    "Egypt",
-    "France",
-    "Germany",
-    "India",
-    "Indonesia",
-    "Iraq",
-    "Italy",
-    "Jordan",
-    "Kenya",
-    "Lebanon",
-    "Malaysia",
-    "Morocco",
-    "Nepal",
-    "Netherlands",
-    "Nigeria",
-    "Pakistan",
-    "Philippines",
-    "Qatar",
-    "Saudi Arabia",
-    "South Africa",
-    "Spain",
-    "Sri Lanka",
-    "Sudan",
-    "Turkey",
-    "United Arab Emirates",
-    "United Kingdom",
-    "United States",
-  ];
+  const studentOptions = students.map((student) => ({
+    label: `${student.first_name} ${student.last_name}`,
+    value: student.id,
+  }));
 
   const courseOptions = courses.map((course) => ({
     label: course.name,
     value: course.id,
-  }));
-
-  const countrySelectOptions = countryOptions.map((country) => ({
-    label: country,
-    value: country,
   }));
 
   return (
@@ -119,21 +82,21 @@ const CreateStudent = () => {
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">
-              Students
+              Enrollments
             </p>
 
             <h1 className="mt-2 text-2xl font-bold text-primary md:text-3xl">
-              Create Student
+              Create Enrollment
             </h1>
 
             <p className="mt-2 text-sm text-muted-foreground">
-              Add a new student to the university portal system.
+              Add a new enrollment to the university portal system.
             </p>
           </div>
 
           <button
             type="button"
-            onClick={() => navigate("/admin/students")}
+            onClick={() => navigate("/admin/enrollments")}
             className="inline-flex items-center gap-2 rounded-2xl border bg-background px-5 py-3 text-sm font-semibold transition-smooth hover:bg-secondary"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -148,16 +111,16 @@ const CreateStudent = () => {
       >
         <div className="mb-8 flex items-center gap-4">
           <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-accent-soft text-accent">
-            <UserPlus className="h-8 w-8" />
+            <GraduationCap className="h-8 w-8" />
           </div>
 
           <div>
             <h2 className="text-xl font-bold text-primary">
-              Student Information
+              Enrollment Information
             </h2>
 
             <p className="text-sm text-muted-foreground">
-              Fill all required student details.
+              Fill all required enrollment details.
             </p>
           </div>
         </div>
@@ -169,88 +132,61 @@ const CreateStudent = () => {
         )}
 
         <div className="grid gap-5 md:grid-cols-2">
-          <FormInput
-            label="First Name"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleChange}
-            required
-          />
-
-          <FormInput
-            label="Last Name"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleChange}
-            required
-          />
-
-          <FormInput
-            label="Email Address"
-            type="email"
-            name="emailAddress"
-            value={formData.emailAddress}
-            onChange={handleChange}
-            required
-          />
-
-          <FormInput
-            label="Contact Number"
-            name="contactNumber"
-            value={formData.contactNumber}
-            onChange={handleChange}
-            required
-          />
-
-          <FormInput
-            label="Passport Number"
-            name="passportNumber"
-            value={formData.passportNumber}
-            onChange={handleChange}
-          />
-
-          <FormInput
-            label="Date of Birth"
-            type="date"
-            name="dateOfBirth"
-            value={formData.dateOfBirth}
-            onChange={handleChange}
-          />
-
-          <FormInput
-            label="Town / City"
-            name="townCity"
-            value={formData.townCity}
-            onChange={handleChange}
-          />
-
-          {/* <FormSelect
-            label="Country"
-            name="country"
-            value={formData.country}
-            onChange={handleChange}
-            options={countryOptions.map((country) => ({
-              label: country,
-              value: country,
-            }))}
-          /> */}
-
           <SearchableSelect
-            label="Country"
-            options={countrySelectOptions}
-            placeholder="Search country..."
+            label="Student"
+            options={studentOptions}
+            placeholder="Search student..."
             onChange={(selected) =>
               setFormData((current) => ({
                 ...current,
-                country: selected?.value || "",
+                studentId: selected?.value || "",
+              }))
+            }
+          />
+
+          <SearchableSelect
+            label="Course"
+            options={courseOptions}
+            placeholder="Search course..."
+            onChange={(selected) =>
+              setFormData((current) => ({
+                ...current,
+                courseId: selected?.value || "",
               }))
             }
           />
 
           <FormInput
-            label="Postcode"
-            name="postcode"
-            value={formData.postcode}
+            label="Enrollment Date"
+            type="date"
+            name="enrollmentDate"
+            value={formData.enrollmentDate}
+            onChange={handleChange}
+            required
+          />
+
+          <FormInput
+            label="Start Date"
+            type="date"
+            name="startDate"
+            value={formData.startDate}
+            onChange={handleChange}
+            required
+          />
+
+          <FormInput
+            label="End Date"
+            type="date"
+            name="endDate"
+            value={formData.endDate}
+            onChange={handleChange}
+          />
+
+          <FormInput
+            label="Completion Date"
+            type="date"
+            name="completionDate"
+            value={formData.completionDate}
             onChange={handleChange}
           />
 
@@ -265,40 +201,32 @@ const CreateStudent = () => {
                 value: "active",
               },
               {
-                label: "Inactive",
-                value: "inactive",
+                label: "Completed",
+                value: "completed",
               },
               {
                 label: "Suspended",
                 value: "suspended",
               },
+              {
+                label: "Withdrawn",
+                value: "withdrawn",
+              },
             ]}
           />
 
-          <SearchableSelect
-            label="Course"
-            options={courseOptions}
-            placeholder="Search course..."
-            onChange={(selected) =>
-              setFormData((current) => ({
-                ...current,
-                courseId: selected?.value || "",
-              }))
-            }
-          />
-        </div>
-
-        <div className="mt-5">
-          <label className="mb-2 block text-sm font-semibold text-primary">
-            Street Address
-          </label>
-
-          <textarea
-            name="streetAddress"
-            value={formData.streetAddress}
+          <FormInput
+            label="Grade"
+            name="grade"
+            value={formData.grade}
             onChange={handleChange}
-            rows="4"
-            className="w-full rounded-2xl border bg-background px-4 py-3 text-sm outline-none transition-smooth focus:border-accent"
+          />
+
+          <FormInput
+            label="Admin Note"
+            name="adminNote"
+            value={formData.adminNote}
+            onChange={handleChange}
           />
         </div>
 
@@ -310,7 +238,7 @@ const CreateStudent = () => {
           >
             <Save className="h-4 w-4" />
 
-            {loading ? "Creating..." : "Create Student"}
+            {loading ? "Creating..." : "Create Enrollment"}
           </button>
         </div>
       </form>
@@ -357,4 +285,4 @@ const FormSelect = ({ label, options, ...props }) => {
   );
 };
 
-export default CreateStudent;
+export default CreateEnrollment;

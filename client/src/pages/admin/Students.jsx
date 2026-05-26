@@ -17,10 +17,9 @@ import { getStudents } from "../../features/student/studentActions";
 import { useNavigate } from "react-router-dom";
 import StatCard from "../../components/widgets/StatCard";
 
-
 const Students = () => {
   const dispatch = useDispatch();
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const {
     students = [],

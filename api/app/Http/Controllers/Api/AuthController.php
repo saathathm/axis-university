@@ -34,7 +34,7 @@ class AuthController extends Controller
             'user' => Auth::guard('api')->user(),
             'token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => config('jwt.ttl') * 60,
+            'expires_in' => config('jwt.ttl') * 960,
         ], 'Login successful');
     }
 
