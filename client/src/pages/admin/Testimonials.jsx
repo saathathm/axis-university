@@ -16,6 +16,7 @@ import {
   getTestimonials,
 } from "../../features/testimonial/testimonialActions";
 import StatCard from "../../components/widgets/StatCard";
+import { BASE_URL } from "../../utils/constants";
 
 const Testimonials = () => {
   const dispatch = useDispatch();
@@ -198,7 +199,7 @@ const Testimonials = () => {
                       <div className="flex items-center gap-4">
                         {testimonial.photo ? (
                           <img
-                            src={`${import.meta.env.VITE_API_BASE_URL}/storage/${testimonial.photo}`}
+                            src={`${BASE_URL}/storage/${testimonial.photo}`}
                             alt={testimonial.name}
                             className="h-14 w-14 rounded-2xl object-cover"
                           />
@@ -367,7 +368,7 @@ const TestimonialDetailsModal = ({ testimonial, onClose }) => {
             <div className="flex flex-col items-center text-center">
               {testimonial.photo ? (
                 <img
-                  src={`${import.meta.env.VITE_API_BASE_URL}/storage/${testimonial.photo}`}
+                  src={`${BASE_URL}/storage/${testimonial.photo}`}
                   alt={testimonial.name}
                   className="h-32 w-32 rounded-3xl object-cover shadow-soft"
                 />

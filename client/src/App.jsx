@@ -26,7 +26,7 @@ import Dashboard from "./pages/admin/Dashboard.jsx";
 import Applications from "./pages/admin/Applications.jsx";
 import Students from "./pages/admin/Students.jsx";
 import Enrollments from "./pages/admin/Enrollments.jsx";
-import Faculties from "./pages/admin/Faculties.jsx";
+import Faculties from "./pages/admin/faculties/Faculties.jsx";
 import Courses from "./pages/admin/Courses.jsx";
 import Certificates from "./pages/admin/Certificates.jsx";
 import Downloads from "./pages/admin/Downloads.jsx";
@@ -34,8 +34,11 @@ import Testimonials from "./pages/admin/Testimonials.jsx";
 import RecognitionsAdmin from "./pages/admin/Recognitions.jsx";
 import Messages from "./pages/admin/Messages.jsx";
 import NewsletterSubscriptions from "./pages/admin/NewsletterSubscriptions.jsx";
+
 import CreateStudent from "./pages/admin/students/CreateStudent";
-import CreateEnrollment from "./pages/admin/students/CreateEnrollment";
+import CreateEnrollment from "./pages/admin/enrollments/CreateEnrollment.jsx";
+import CreateFaculty from "./pages/admin/faculties/CreateFaculty";
+import EditFaculty from "./pages/admin/faculties/EditFaculty.jsx";
 
 function App() {
   const dispatch = useDispatch();
@@ -87,7 +90,12 @@ function App() {
               element={<NewsletterSubscriptions />}
             />
             <Route path="/admin/students/create" element={<CreateStudent />} />
-            <Route path="/admin/enrollments/create" element={<CreateEnrollment />} />
+            <Route
+              path="/admin/enrollments/create"
+              element={<CreateEnrollment />}
+            />
+            <Route path="/admin/faculties/create" element={<CreateFaculty />} />
+            <Route path="/admin/faculties/:id/edit" element={<EditFaculty />} />
           </Route>
         </Route>
       </Routes>

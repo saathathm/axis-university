@@ -18,6 +18,7 @@ import {
   getRecognitions,
 } from "../../features/recognition/recognitionActions";
 import StatCard from "../../components/widgets/StatCard";
+import { BASE_URL } from "../../utils/constants";
 
 const Recognitions = () => {
   const dispatch = useDispatch();
@@ -221,7 +222,7 @@ const Recognitions = () => {
                     <td className="px-5 py-4">
                       {recognition.image ? (
                         <img
-                          src={`${import.meta.env.VITE_API_BASE_URL}/storage/${recognition.image}`}
+                          src={`${BASE_URL}/storage/${recognition.image}`}
                           alt={recognition.title}
                           className="h-16 w-24 rounded-2xl object-cover"
                         />
@@ -342,7 +343,7 @@ const RecognitionDetailsModal = ({ recognition, onClose }) => {
           <div className="rounded-3xl bg-gradient-primary p-6 text-primary-foreground shadow-soft">
             {recognition.image ? (
               <img
-                src={`${import.meta.env.VITE_API_BASE_URL}/storage/${recognition.image}`}
+                src={`${BASE_URL}/storage/${recognition.image}`}
                 alt={recognition.title}
                 className="h-64 w-full rounded-3xl object-cover shadow-soft"
               />

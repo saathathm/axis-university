@@ -15,6 +15,7 @@ import {
 
 import { deleteCourse, getCourses } from "../../features/course/courseActions";
 import StatCard from "../../components/widgets/StatCard";
+import { BASE_URL } from "../../utils/constants";
 
 const Courses = () => {
   const dispatch = useDispatch();
@@ -215,7 +216,7 @@ const Courses = () => {
                       <div className="flex items-start gap-4">
                         <div className="h-16 w-16 overflow-hidden rounded-2xl border bg-secondary">
                           <img
-                            src={`${import.meta.env.VITE_API_BASE_URL}/storage/${course.image}`}
+                            src={`${BASE_URL}/storage/${course.image}`}
                             alt={course.name}
                             className="h-full w-full object-cover"
                           />
@@ -364,7 +365,7 @@ const CourseDetailsModal = ({ course, onClose }) => {
           <div className="space-y-5">
             <div className="overflow-hidden rounded-3xl border bg-secondary">
               <img
-                src={`${import.meta.env.VITE_API_BASE_URL}/storage/${course.image}`}
+                src={`${BASE_URL}/storage/${course.image}`}
                 alt={course.name}
                 className="h-full w-full object-cover"
               />

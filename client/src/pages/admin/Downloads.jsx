@@ -17,6 +17,7 @@ import {
   getDownloads,
 } from "../../features/download/downloadActions";
 import StatCard from "../../components/widgets/StatCard";
+import { BASE_URL } from "../../utils/constants";
 
 const Downloads = () => {
   const dispatch = useDispatch();
@@ -232,7 +233,7 @@ const Downloads = () => {
                     <td className="px-5 py-4">
                       <div className="flex justify-end gap-2">
                         <a
-                          href={`${import.meta.env.VITE_API_BASE_URL}/storage/${download.file}`}
+                          href={`${BASE_URL}/storage/${download.file}`}
                           target="_blank"
                           rel="noreferrer"
                           className="inline-flex h-9 w-9 items-center justify-center rounded-full border bg-card text-foreground transition-smooth hover:bg-secondary"
@@ -249,7 +250,7 @@ const Downloads = () => {
                         </button>
 
                         <a
-                          href={`${import.meta.env.VITE_API_BASE_URL}/storage/${download.file}`}
+                          href={`${BASE_URL}/storage/${download.file}`}
                           download
                           className="inline-flex h-9 w-9 items-center justify-center rounded-full border bg-card text-foreground transition-smooth hover:bg-secondary"
                         >
@@ -321,7 +322,7 @@ const DetailCard = ({ label, value }) => {
 };
 
 const DownloadDetailsModal = ({ download, onClose }) => {
-  const fileUrl = `${import.meta.env.VITE_API_BASE_URL}/storage/${download.file}`;
+  const fileUrl = `${BASE_URL}/storage/${download.file}`;
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/45 p-4">
