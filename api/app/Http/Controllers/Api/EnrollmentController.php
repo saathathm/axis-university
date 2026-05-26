@@ -6,6 +6,7 @@ use App\Models\Enrollment;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 
 class EnrollmentController extends Controller
 {
@@ -116,6 +117,6 @@ class EnrollmentController extends Controller
 
     private function generateEnrollmentNumber()
     {
-        return 'ENR-' . now()->format('Y') . '-' . str_pad(Enrollment::count() + 1, 5, '0', STR_PAD_LEFT);
+        return 'ENR-' . now()->format('ymd') . '-' . strtoupper(Str::random(4));
     }
 }

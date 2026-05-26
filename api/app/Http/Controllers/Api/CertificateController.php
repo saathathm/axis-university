@@ -7,6 +7,7 @@ use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class CertificateController extends Controller
 {
@@ -113,6 +114,6 @@ class CertificateController extends Controller
 
     private function generateCertificateNumber()
     {
-        return 'CERT-' . now()->format('Y') . '-' . str_pad(Certificate::count() + 1, 5, '0', STR_PAD_LEFT);
+        return 'CERT-' . now()->format('ymd') . '-' . strtoupper(Str::random(4));
     }
 }

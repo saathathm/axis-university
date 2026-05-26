@@ -8,6 +8,7 @@ use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 
 class StudentController extends Controller
 {
@@ -75,7 +76,6 @@ class StudentController extends Controller
                 'student' => $student,
                 'enrollment' => $enrollment,
             ], 'Student created successfully', 201);
-
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -132,11 +132,11 @@ class StudentController extends Controller
 
     private function generateStudentNumber()
     {
-        return 'STU-' . now()->format('Y') . '-' . str_pad(Student::count() + 1, 5, '0', STR_PAD_LEFT);
+        return 'STU-' . now()->format('ymd') . '-' . strtoupper(Str::random(4));
     }
 
     private function generateEnrollmentNumber()
     {
-        return 'ENR-' . now()->format('Y') . '-' . str_pad(Enrollment::count() + 1, 5, '0', STR_PAD_LEFT);
+        return 'ENR-' . now()->format('ymd') . '-' . strtoupper(Str::random(4));
     }
 }

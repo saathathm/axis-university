@@ -9,6 +9,7 @@ use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 
 class ApplicationController extends Controller
 {
@@ -31,7 +32,7 @@ class ApplicationController extends Controller
         ]);
 
         $application = Application::create([
-            'application_number' => 'APP-' . now()->format('Y') . '-' . str_pad(Application::count() + 1, 5, '0', STR_PAD_LEFT),
+            'application_number' => 'APP-' . now()->format('ymd') . '-' . strtoupper(Str::random(4)),
             'first_name' => $validated['firstName'],
             'last_name' => $validated['lastName'],
             'passport_number' => $validated['passportNumber'],
@@ -78,7 +79,7 @@ class ApplicationController extends Controller
             $student = Student::firstOrCreate(
                 ['email_address' => $application->email_address],
                 [
-                    'student_number' => 'STU-' . now()->format('Y') . '-' . str_pad(Student::count() + 1, 5, '0', STR_PAD_LEFT),
+                    'student_number' => 'STU-' . now()->format('ymd') . '-' . strtoupper(Str::random(4)),
                     'first_name' => $application->first_name,
                     'last_name' => $application->last_name,
                     'contact_number' => $application->contact_number,
@@ -103,7 +104,7 @@ class ApplicationController extends Controller
             }
 
             $enrollment = Enrollment::create([
-                'enrollment_number' => 'ENR-' . now()->format('Y') . '-' . str_pad(Enrollment::count() + 1, 5, '0', STR_PAD_LEFT),
+                'enrollment_number' => 'ENR-' . now()->format('ymd') . '-' . strtoupper(Str::random(4)),
                 'student_id' => $student->id,
                 'course_id' => $application->course_id,
                 'application_id' => $application->id,
