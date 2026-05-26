@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  BookOpen,
   CheckCircle2,
   Eye,
   FileText,
+  FolderOpen,
   Search,
+  Trash2,
   UserCheck,
   XCircle,
 } from "lucide-react";
@@ -18,6 +21,7 @@ import {
   clearApplicationError,
   clearApplicationMessage,
 } from "../../features/application/applicationSlice";
+import StatCard from "../../components/widgets/StatCard";
 
 const Applications = () => {
   const dispatch = useDispatch();
@@ -144,14 +148,21 @@ const Applications = () => {
               enrollments.
             </p>
           </div>
-
-          <div className="grid gap-3 sm:grid-cols-4 lg:min-w-[560px]">
-            <ApplicationCount label="Total" value={counts.total} />
-            <ApplicationCount label="Pending" value={counts.pending} />
-            <ApplicationCount label="Enrolled" value={counts.enrolled} />
-            <ApplicationCount label="Rejected" value={counts.rejected} />
-          </div>
         </div>
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <StatCard
+          title="Total Applications"
+          value={counts.total}
+          icon={FolderOpen}
+        />
+
+        <StatCard title="Pending" value={counts.pending} icon={BookOpen} />
+
+        <StatCard title="Enrolled" value={counts.enrolled} icon={FileText} />
+
+        <StatCard title="Rejected" value={counts.rejected} icon={Trash2} />
       </section>
 
       <section className="rounded-3xl border bg-card p-5 shadow-soft">
