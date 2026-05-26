@@ -34,6 +34,7 @@ import Testimonials from "./pages/admin/Testimonials.jsx";
 import RecognitionsAdmin from "./pages/admin/Recognitions.jsx";
 import Messages from "./pages/admin/Messages.jsx";
 import NewsletterSubscriptions from "./pages/admin/NewsletterSubscriptions.jsx";
+import CreateStudent from "./pages/admin/students/CreateStudent";
 
 function App() {
   const dispatch = useDispatch();
@@ -84,6 +85,7 @@ function App() {
               path="/admin/newsletter-subscriptions"
               element={<NewsletterSubscriptions />}
             />
+            <Route path="/admin/students/create" element={<CreateStudent />} />
           </Route>
         </Route>
       </Routes>

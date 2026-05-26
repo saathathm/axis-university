@@ -95,20 +95,6 @@ const Messages = () => {
               university website.
             </p>
           </div>
-
-          <div className="flex items-center gap-3 rounded-2xl border bg-secondary/40 px-5 py-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-soft text-accent">
-              <Mail className="h-6 w-6" />
-            </div>
-
-            <div>
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                Total Messages
-              </p>
-
-              <h3 className="text-2xl font-bold text-primary">{stats.total}</h3>
-            </div>
-          </div>
         </div>
       </section>
 

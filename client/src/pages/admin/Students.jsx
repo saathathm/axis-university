@@ -1,19 +1,25 @@
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  CalendarDays,
   Eye,
   GraduationCap,
   Mail,
   Phone,
+  Plus,
   Search,
+  Trash2,
   UserRound,
   Users,
 } from "lucide-react";
 
 import { getStudents } from "../../features/student/studentActions";
+import { useNavigate } from "react-router-dom";
+
 
 const Students = () => {
   const dispatch = useDispatch();
+const navigate = useNavigate();
 
   const {
     students = [],
@@ -62,6 +68,24 @@ const Students = () => {
     };
   }, [students]);
 
+  const StatCard = ({ title, value, icon: Icon }) => {
+    return (
+      <div className="rounded-3xl border bg-card p-5 shadow-soft">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-sm text-muted-foreground">{title}</p>
+
+            <h3 className="mt-3 text-3xl font-bold text-primary">{value}</h3>
+          </div>
+
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-soft text-accent">
+            <Icon className="h-7 w-7" />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6">
       <section className="rounded-3xl border bg-card p-6 shadow-soft">
@@ -81,13 +105,29 @@ const Students = () => {
             </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-4 lg:min-w-[560px]">
-            <StudentCount label="Total" value={counts.total} />
-            <StudentCount label="Active" value={counts.active} />
-            <StudentCount label="Inactive" value={counts.inactive} />
-            <StudentCount label="Suspended" value={counts.suspended} />
-          </div>
+          <button
+            type="button"
+            onClick={() => navigate("/admin/students/create")}
+            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-accent px-5 py-3 text-sm font-semibold text-accent-foreground shadow-soft transition-smooth hover:opacity-90"
+          >
+            <Plus className="h-4 w-4" />
+            Add Student
+          </button>
         </div>
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <StatCard title="Total Students" value={counts.total} icon={Users} />
+
+        <StatCard title="Active" value={counts.active} icon={UserRound} />
+
+        <StatCard
+          title="Inactive"
+          value={counts.inactive}
+          icon={CalendarDays}
+        />
+
+        <StatCard title="Suspended" value={counts.suspended} icon={Trash2} />
       </section>
 
       <section className="rounded-3xl border bg-card p-5 shadow-soft">
