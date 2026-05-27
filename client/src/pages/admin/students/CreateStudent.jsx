@@ -41,6 +41,14 @@ const CreateStudent = ({ student = null, isEdit = false }) => {
     dispatch(getCourses());
   }, [dispatch]);
 
+  const formatDateForInput = (value) => {
+    if (!value) {
+      return "";
+    }
+
+    return String(value).split("T")[0];
+  };
+
   useEffect(() => {
     if (student) {
       setFormData({
@@ -49,7 +57,7 @@ const CreateStudent = ({ student = null, isEdit = false }) => {
         emailAddress: student.email_address || "",
         contactNumber: student.contact_number || "",
         passportNumber: student.passport_number || "",
-        dateOfBirth: student.date_of_birth || "",
+        dateOfBirth: formatDateForInput(student.date_of_birth),
         streetAddress: student.street_address || "",
         townCity: student.town_city || "",
         country: student.country || "",
@@ -142,6 +150,15 @@ const CreateStudent = ({ student = null, isEdit = false }) => {
     label: country,
     value: country,
   }));
+
+  const selectedCountry =
+    countrySelectOptions.find((option) => option.value === formData.country) ||
+    null;
+
+  const selectedCourse =
+    courseOptions.find(
+      (option) => String(option.value) === String(formData.courseId),
+    ) || null;
 
   return (
     <div className="space-y-6">
@@ -257,6 +274,7 @@ const CreateStudent = ({ student = null, isEdit = false }) => {
           <SearchableSelect
             label="Country"
             options={countrySelectOptions}
+            value={selectedCountry}
             placeholder="Search country..."
             onChange={(selected) =>
               setFormData((current) => ({
@@ -297,6 +315,7 @@ const CreateStudent = ({ student = null, isEdit = false }) => {
           <SearchableSelect
             label="Course"
             options={courseOptions}
+            value={selectedCourse}
             placeholder="Search course..."
             onChange={(selected) =>
               setFormData((current) => ({

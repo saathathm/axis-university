@@ -4,6 +4,7 @@ const SearchableSelect = ({
   label,
   options = [],
   placeholder = "Search...",
+  value = null,
   onChange,
 }) => {
   return (
@@ -14,6 +15,7 @@ const SearchableSelect = ({
 
       <Select
         options={options}
+        value={value}
         placeholder={placeholder}
         onChange={onChange}
         className="text-sm"

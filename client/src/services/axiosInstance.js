@@ -4,7 +4,7 @@ import { BASE_URL } from "../utils/constants.js";
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
   headers: {
-    "Accept": "application/json",
+    Accept: "application/json",
   },
 });
 axiosInstance.interceptors.request.use(
@@ -19,5 +19,21 @@ axiosInstance.interceptors.request.use(
   },
   (error) => Promise.reject(error),
 );
+
+// axiosInstance.interceptors.response.use(
+//   (response) => response,
+
+//   (error) => {
+//     if (error.response?.status === 401) {
+//       localStorage.removeItem("token");
+
+//       if (window.location.pathname !== "/admin/login") {
+//         window.location.href = "/admin/login";
+//       }
+//     }
+
+//     return Promise.reject(error);
+//   },
+// );
 
 export default axiosInstance;
