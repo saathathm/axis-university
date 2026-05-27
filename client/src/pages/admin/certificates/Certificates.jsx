@@ -18,11 +18,14 @@ import {
   deleteCertificate,
   getCertificates,
   verifyCertificate,
-} from "../../features/certificate/certificateActions";
-import StatCard from "../../components/widgets/StatCard";
+} from "../../../features/certificate/certificateActions";
+import StatCard from "../../../components/widgets/StatCard";
+import PageHeader from "../../../components/widgets/PageHeader";
+import { useNavigate } from "react-router-dom";
 
 const Certificates = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const {
     certificates = [],
@@ -101,7 +104,7 @@ const Certificates = () => {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-3xl border bg-card p-6 shadow-soft">
+      {/* <section className="rounded-3xl border bg-card p-6 shadow-soft">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">
@@ -125,7 +128,16 @@ const Certificates = () => {
             Issue Certificate
           </button>
         </div>
-      </section>
+      </section> */}
+
+      <PageHeader
+        eyebrow="Certificates"
+        title="Certificate Management"
+        description="Manage, verify, track and maintain issued student certificates."
+        buttonText="Issue Certificate"
+        buttonIcon={Plus}
+        onButtonClick={() => navigate("/admin/certificates/create")}
+      />
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard title="Total Certificates" value={stats.total} icon={Award} />

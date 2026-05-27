@@ -18,6 +18,7 @@ import {
 } from "../../../features/enrollment/enrollmentActions";
 import StatCard from "../../../components/widgets/StatCard";
 import { useNavigate } from "react-router-dom";
+import PageHeader from "../../../components/widgets/PageHeader";
 
 const Enrollments = () => {
   const dispatch = useDispatch();
@@ -93,34 +94,14 @@ const Enrollments = () => {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-3xl border bg-card p-6 shadow-soft">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">
-              Enrollments
-            </p>
-
-            <h1 className="mt-2 text-2xl font-bold text-primary md:text-3xl">
-              Enrollment Management
-            </h1>
-
-            <p className="mt-2 text-sm text-muted-foreground">
-              Manage student enrollments, course registrations, statuses, and
-              academic records.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => navigate("/admin/enrollments/create")}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-accent px-5 py-3 text-sm font-semibold text-accent-foreground shadow-soft transition-smooth hover:opacity-90"
-          >
-            <Plus className="h-4 w-4" />
-            Add Enrollment
-          </button>
-        </div>
-      </section>
-
+      <PageHeader
+        eyebrow="Enrollments"
+        title="Enrollment Management"
+        description="Manage student enrollments, course registrations, statuses, and academic records."
+        buttonText="Add Enrollment"
+        buttonIcon={Plus}
+        onButtonClick={() => navigate("/admin/enrollments/create")}
+      />
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard
           title="Total Enrollments"
@@ -138,7 +119,6 @@ const Enrollments = () => {
 
         <StatCard title="Withdrawn" value={stats.withdrawn} icon={Trash2} />
       </section>
-
       <section className="rounded-3xl border bg-card p-5 shadow-soft">
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
           <div className="relative">
@@ -171,7 +151,6 @@ const Enrollments = () => {
           </div>
         )}
       </section>
-
       <section className="overflow-hidden rounded-3xl border bg-card shadow-soft">
         <div className="border-b px-6 py-5">
           <h2 className="text-lg font-bold text-primary">Enrollment Records</h2>
@@ -276,7 +255,9 @@ const Enrollments = () => {
                         <button
                           type="button"
                           className="inline-flex h-9 w-9 items-center justify-center rounded-full border bg-card text-foreground transition-smooth hover:bg-secondary"
-                          onClick={() => navigate(`/admin/enrollments/${enrollment.id}/edit`)}
+                          onClick={() =>
+                            navigate(`/admin/enrollments/${enrollment.id}/edit`)
+                          }
                           title="Edit enrollment"
                         >
                           <Pencil className="h-4 w-4" />
@@ -307,7 +288,6 @@ const Enrollments = () => {
           </table>
         </div>
       </section>
-
       {selectedEnrollment && (
         <EnrollmentDetailsModal
           enrollment={selectedEnrollment}

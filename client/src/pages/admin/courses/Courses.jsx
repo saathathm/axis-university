@@ -23,9 +23,11 @@ import { BASE_URL } from "../../../utils/constants";
 import CourseDetailsModal from "../../../components/widgets/admin/course/CourseDetailsModal";
 import StatusBadge from "../../../components/widgets/admin/StatusBadge";
 import PageHeader from "../../../components/widgets/PageHeader";
+import { useNavigate } from "react-router-dom";
 
 const Courses = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const {
     courses = [],

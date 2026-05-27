@@ -28,10 +28,10 @@ import Students from "./pages/admin/students/Students.jsx";
 import Enrollments from "./pages/admin/enrollments/Enrollments.jsx";
 import Faculties from "./pages/admin/faculties/Faculties.jsx";
 import Courses from "./pages/admin/courses/Courses.jsx";
-import Certificates from "./pages/admin/Certificates.jsx";
-import Downloads from "./pages/admin/Downloads.jsx";
-import Testimonials from "./pages/admin/Testimonials.jsx";
-import RecognitionsAdmin from "./pages/admin/Recognitions.jsx";
+import Certificates from "./pages/admin/certificates/Certificates.jsx";
+import Downloads from "./pages/admin/downloads/Downloads.jsx";
+import Testimonials from "./pages/admin/testimonials/Testimonials.jsx";
+import RecognitionsAdmin from "./pages/admin/recognitions/Recognitions.jsx";
 import Messages from "./pages/admin/Messages.jsx";
 import NewsletterSubscriptions from "./pages/admin/NewsletterSubscriptions.jsx";
 

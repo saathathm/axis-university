@@ -17,6 +17,7 @@ import {
   getMessages,
 } from "../../features/message/messageActions";
 import StatCard from "../../components/widgets/StatCard";
+import SearchSection from "../../components/widgets/admin/SearchSection";
 
 const Messages = () => {
   const dispatch = useDispatch();
@@ -109,35 +110,14 @@ const Messages = () => {
         <StatCard title="Today" value={stats.today} icon={Calendar} />
       </section>
 
-      <section className="rounded-3xl border bg-card p-5 shadow-soft">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h2 className="text-lg font-bold text-primary">Search Messages</h2>
-
-            <p className="mt-1 text-sm text-muted-foreground">
-              Search by sender, email, subject or message content.
-            </p>
-          </div>
-
-          <div className="relative w-full max-w-md">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-
-            <input
-              type="text"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search messages..."
-              className="w-full rounded-2xl border bg-background px-11 py-3 text-sm outline-none transition-smooth focus:border-accent"
-            />
-          </div>
-        </div>
-
-        {error && (
-          <div className="mt-4 rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-            {error}
-          </div>
-        )}
-      </section>
+      <SearchSection
+        title="Search Messages"
+        description="Find messages from visitors and students quickly."
+        search={search}
+        setSearch={setSearch}
+        placeholder="Search messages..."
+        error={error}
+      />
 
       <section className="overflow-hidden rounded-3xl border bg-card shadow-soft">
         <div className="border-b px-6 py-5">

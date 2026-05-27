@@ -22,6 +22,7 @@ import StatusBadge from "../../../components/widgets/admin/StatusBadge";
 import formatDate from "../../../components/widgets/formatDate";
 import { BASE_URL } from "../../../utils/constants";
 import EditFaculty from "./EditFaculty";
+import PageHeader from "../../../components/widgets/PageHeader";
 
 const Faculties = () => {
   const dispatch = useDispatch();
@@ -76,34 +77,14 @@ const Faculties = () => {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-3xl border bg-card p-6 shadow-soft">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">
-              Faculties
-            </p>
-
-            <h1 className="mt-2 text-2xl font-bold text-primary md:text-3xl">
-              Faculty Management
-            </h1>
-
-            <p className="mt-2 text-sm text-muted-foreground">
-              Manage university faculties, departments, programs, and academic
-              divisions.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => navigate("/admin/faculties/create")}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-accent px-5 py-3 text-sm font-semibold text-accent-foreground shadow-soft transition-smooth hover:opacity-90"
-          >
-            <Plus className="h-4 w-4" />
-            Add Faculty
-          </button>
-        </div>
-      </section>
-
+      <PageHeader
+        eyebrow="Faculties"
+        title="Faculty Records"
+        description="Manage university faculties, departments, programs, and academic divisions."
+        buttonText="Add Faculty"
+        buttonIcon={Plus}
+        onButtonClick={() => navigate("/admin/faculties/create")}
+      />
       <section className="grid gap-4 md:grid-cols-3">
         <StatCard
           title="Total Faculties"
@@ -123,7 +104,6 @@ const Faculties = () => {
           icon={BookOpen}
         />
       </section>
-
       <section className="rounded-3xl border bg-card p-5 shadow-soft">
         <div className="relative">
           <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -143,7 +123,6 @@ const Faculties = () => {
           </div>
         )}
       </section>
-
       <section className="overflow-hidden rounded-3xl border bg-card shadow-soft">
         <div className="border-b px-6 py-5">
           <h2 className="text-lg font-bold text-primary">Faculty Records</h2>
@@ -264,7 +243,6 @@ const Faculties = () => {
           </table>
         </div>
       </section>
-
       {selectedFaculty && (
         <FacultyDetailsModal
           faculty={selectedFaculty}

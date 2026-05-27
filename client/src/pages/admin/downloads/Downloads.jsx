@@ -15,12 +15,16 @@ import {
 import {
   deleteDownload,
   getDownloads,
-} from "../../features/download/downloadActions";
-import StatCard from "../../components/widgets/StatCard";
-import { BASE_URL } from "../../utils/constants";
+} from "../../../features/download/downloadActions";
+import StatCard from "../../../components/widgets/StatCard";
+import { BASE_URL } from "../../../utils/constants";
+import { useNavigate } from "react-router-dom";
+import PageHeader from "../../../components/widgets/PageHeader";
+import SearchSection from "../../../components/widgets/admin/SearchSection";
 
 const Downloads = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const {
     downloads = [],
@@ -79,32 +83,14 @@ const Downloads = () => {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-3xl border bg-card p-6 shadow-soft">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">
-              Downloads
-            </p>
-
-            <h1 className="mt-2 text-2xl font-bold text-primary md:text-3xl">
-              Download Management
-            </h1>
-
-            <p className="mt-2 text-sm text-muted-foreground">
-              Manage brochures, prospectus, documents and downloadable course
-              materials.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-accent px-5 py-3 text-sm font-semibold text-accent-foreground shadow-soft transition-smooth hover:opacity-90"
-          >
-            <Plus className="h-4 w-4" />
-            Add Download
-          </button>
-        </div>
-      </section>
+      <PageHeader
+        eyebrow="Downloads"
+        title="Download Management"
+        description="Manage brochures, prospectus, documents and downloadable course materials."
+        buttonText="Add Download"
+        buttonIcon={Plus}
+        onButtonClick={() => navigate("/admin/downloads/create")}
+      />
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard title="Total Files" value={stats.total} icon={FolderOpen} />
@@ -116,35 +102,14 @@ const Downloads = () => {
         <StatCard title="Inactive Files" value={stats.inactive} icon={Trash2} />
       </section>
 
-      <section className="rounded-3xl border bg-card p-5 shadow-soft">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h2 className="text-lg font-bold text-primary">Search Downloads</h2>
-
-            <p className="mt-1 text-sm text-muted-foreground">
-              Search brochures and downloadable documents.
-            </p>
-          </div>
-
-          <div className="relative w-full max-w-md">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-
-            <input
-              type="text"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search downloads..."
-              className="w-full rounded-2xl border bg-background px-11 py-3 text-sm outline-none transition-smooth focus:border-accent"
-            />
-          </div>
-        </div>
-
-        {error && (
-          <div className="mt-4 rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-            {error}
-          </div>
-        )}
-      </section>
+      <SearchSection
+        title="Search Downloads"
+        description="Find brochures and downloadable documents."
+        search={search}
+        setSearch={setSearch}
+        placeholder="Search downloads..."
+        error={error}
+      />
 
       <section className="overflow-hidden rounded-3xl border bg-card shadow-soft">
         <div className="border-b px-6 py-5">

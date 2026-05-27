@@ -14,12 +14,16 @@ import {
 import {
   deleteTestimonial,
   getTestimonials,
-} from "../../features/testimonial/testimonialActions";
-import StatCard from "../../components/widgets/StatCard";
-import { BASE_URL } from "../../utils/constants";
+} from "../../../features/testimonial/testimonialActions";
+import StatCard from "../../../components/widgets/StatCard";
+import { BASE_URL } from "../../../utils/constants";
+import { useNavigate } from "react-router-dom";
+import PageHeader from "../../../components/widgets/PageHeader";
+import SearchSection from "../../../components/widgets/admin/SearchSection";
 
 const Testimonials = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const {
     testimonials = [],
@@ -80,32 +84,14 @@ const Testimonials = () => {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-3xl border bg-card p-6 shadow-soft">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">
-              Testimonials
-            </p>
-
-            <h1 className="mt-2 text-2xl font-bold text-primary md:text-3xl">
-              Testimonial Management
-            </h1>
-
-            <p className="mt-2 text-sm text-muted-foreground">
-              Manage student, alumni and partner testimonials across the
-              university website.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-accent px-5 py-3 text-sm font-semibold text-accent-foreground shadow-soft transition-smooth hover:opacity-90"
-          >
-            <Plus className="h-4 w-4" />
-            Add Testimonial
-          </button>
-        </div>
-      </section>
+      <PageHeader
+        eyebrow="Testimonials"
+        title="Testimonial Management"
+        description="Manage student, alumni and partner testimonials across the university website."
+        buttonText="Add Testimonial"
+        buttonIcon={Plus}
+        onButtonClick={() => navigate("/admin/testimonials/create")}
+      />
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard
@@ -121,37 +107,14 @@ const Testimonials = () => {
         <StatCard title="Inactive" value={stats.inactive} icon={Trash2} />
       </section>
 
-      <section className="rounded-3xl border bg-card p-5 shadow-soft">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h2 className="text-lg font-bold text-primary">
-              Search Testimonials
-            </h2>
-
-            <p className="mt-1 text-sm text-muted-foreground">
-              Find testimonials by student name, role or content.
-            </p>
-          </div>
-
-          <div className="relative w-full max-w-md">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-
-            <input
-              type="text"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search testimonials..."
-              className="w-full rounded-2xl border bg-background px-11 py-3 text-sm outline-none transition-smooth focus:border-accent"
-            />
-          </div>
-        </div>
-
-        {error && (
-          <div className="mt-4 rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-            {error}
-          </div>
-        )}
-      </section>
+      <SearchSection
+        title="Search Testimonials"
+        description="Find testimonials by student name, role or content."
+        search={search}
+        setSearch={setSearch}
+        placeholder="Search testimonials..."
+        error={error}
+      />
 
       <section className="overflow-hidden rounded-3xl border bg-card shadow-soft">
         <div className="border-b px-6 py-5">

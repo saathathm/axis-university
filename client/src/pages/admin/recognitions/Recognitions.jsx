@@ -16,12 +16,16 @@ import {
 import {
   deleteRecognition,
   getRecognitions,
-} from "../../features/recognition/recognitionActions";
-import StatCard from "../../components/widgets/StatCard";
-import { BASE_URL } from "../../utils/constants";
+} from "../../../features/recognition/recognitionActions";
+import StatCard from "../../../components/widgets/StatCard";
+import { BASE_URL } from "../../../utils/constants";
+import { useNavigate } from "react-router-dom";
+import PageHeader from "../../../components/widgets/PageHeader";
+import SearchSection from "../../../components/widgets/admin/SearchSection";
 
 const Recognitions = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const {
     recognitions = [],
@@ -80,32 +84,14 @@ const Recognitions = () => {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-3xl border bg-card p-6 shadow-soft">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">
-              Recognitions
-            </p>
-
-            <h1 className="mt-2 text-2xl font-bold text-primary md:text-3xl">
-              Recognition Management
-            </h1>
-
-            <p className="mt-2 text-sm text-muted-foreground">
-              Manage university recognitions, accreditations, achievements and
-              institutional awards.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-accent px-5 py-3 text-sm font-semibold text-accent-foreground shadow-soft transition-smooth hover:opacity-90"
-          >
-            <Plus className="h-4 w-4" />
-            Add Recognition
-          </button>
-        </div>
-      </section>
+      <PageHeader
+        eyebrow="Recognitions"
+        title="Recognition Management"
+        description="Manage university recognitions, accreditations, achievements and institutional awards."
+        buttonText="Add Recognition"
+        buttonIcon={Plus}
+        onButtonClick={() => navigate("/admin/recognitions/create")}
+      />
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard title="Total Recognitions" value={stats.total} icon={Award} />
@@ -121,37 +107,14 @@ const Recognitions = () => {
         <StatCard title="Inactive" value={stats.inactive} icon={Trash2} />
       </section>
 
-      <section className="rounded-3xl border bg-card p-5 shadow-soft">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h2 className="text-lg font-bold text-primary">
-              Search Recognitions
-            </h2>
-
-            <p className="mt-1 text-sm text-muted-foreground">
-              Find recognitions, achievements and accreditation records quickly.
-            </p>
-          </div>
-
-          <div className="relative w-full max-w-md">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-
-            <input
-              type="text"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search recognitions..."
-              className="w-full rounded-2xl border bg-background px-11 py-3 text-sm outline-none transition-smooth focus:border-accent"
-            />
-          </div>
-        </div>
-
-        {error && (
-          <div className="mt-4 rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-            {error}
-          </div>
-        )}
-      </section>
+      <SearchSection
+        title="Search Recognitions"
+        description="Find recognitions, achievements and accreditation records quickly."
+        search={search}
+        setSearch={setSearch}
+        placeholder="Search recognitions..."
+        error={error}
+      />
 
       <section className="overflow-hidden rounded-3xl border bg-card shadow-soft">
         <div className="border-b px-6 py-5">
@@ -220,11 +183,11 @@ const Recognitions = () => {
                     </td>
 
                     <td className="px-5 py-4">
-                      {recognition.image ? (
+                      {recognition.photo ? (
                         <img
-                          src={`${BASE_URL}/storage/${recognition.image}`}
+                          src={`${BASE_URL}/storage/${recognition.photo}`}
                           alt={recognition.title}
-                          className="h-16 w-24 rounded-2xl object-cover"
+                          className="h-16 w-24 rounded-2xl object-contain"
                         />
                       ) : (
                         <div className="flex h-16 w-24 items-center justify-center rounded-2xl border bg-secondary text-muted-foreground">
@@ -341,11 +304,11 @@ const RecognitionDetailsModal = ({ recognition, onClose }) => {
 
         <div className="mt-6 grid gap-8 lg:grid-cols-[360px_minmax(0,1fr)]">
           <div className="rounded-3xl bg-gradient-primary p-6 text-primary-foreground shadow-soft">
-            {recognition.image ? (
+            {recognition.photo ? (
               <img
-                src={`${BASE_URL}/storage/${recognition.image}`}
+                src={`${BASE_URL}/storage/${recognition.photo}`}
                 alt={recognition.title}
-                className="h-64 w-full rounded-3xl object-cover shadow-soft"
+                className="h-64 w-full rounded-3xl object-contain shadow-soft"
               />
             ) : (
               <div className="flex h-64 w-full items-center justify-center rounded-3xl bg-white/10">
