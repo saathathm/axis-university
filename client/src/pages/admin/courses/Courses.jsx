@@ -10,12 +10,19 @@ import {
   Plus,
   Search,
   Trash2,
+  UserRound,
   Users,
 } from "lucide-react";
 
-import { deleteCourse, getCourses } from "../../features/course/courseActions";
-import StatCard from "../../components/widgets/StatCard";
-import { BASE_URL } from "../../utils/constants";
+import {
+  deleteCourse,
+  getCourses,
+} from "../../../features/course/courseActions";
+import StatCard from "../../../components/widgets/StatCard";
+import { BASE_URL } from "../../../utils/constants";
+import CourseDetailsModal from "../../../components/widgets/admin/course/CourseDetailsModal";
+import StatusBadge from "../../../components/widgets/admin/StatusBadge";
+import PageHeader from "../../../components/widgets/PageHeader";
 
 const Courses = () => {
   const dispatch = useDispatch();
@@ -94,33 +101,15 @@ const Courses = () => {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-3xl border bg-card p-6 shadow-soft">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">
-              Courses
-            </p>
-
-            <h1 className="mt-2 text-2xl font-bold text-primary md:text-3xl">
-              Course Management
-            </h1>
-
-            <p className="mt-2 text-sm text-muted-foreground">
-              Manage academic programs, diplomas, undergraduate and postgraduate
-              courses.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-accent px-5 py-3 text-sm font-semibold text-accent-foreground shadow-soft transition-smooth hover:opacity-90"
-          >
-            <Plus className="h-4 w-4" />
-            Add Course
-          </button>
-        </div>
-      </section>
-
+      <PageHeader
+        eyebrow="Courses"
+        title="Course Management"
+        description="Manage academic programs, diplomas, undergraduate and postgraduate courses."
+        buttonText="Add Course"
+        buttonIcon={Plus}
+        onButtonClick={() => navigate("/admin/courses/create")}
+      />
+      
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard title="Total Courses" value={stats.total} icon={BookCopy} />
 
@@ -138,7 +127,6 @@ const Courses = () => {
           icon={Users}
         />
       </section>
-
       <section className="rounded-3xl border bg-card p-5 shadow-soft">
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">
           <div className="relative">
@@ -174,7 +162,6 @@ const Courses = () => {
           </div>
         )}
       </section>
-
       <section className="overflow-hidden rounded-3xl border bg-card shadow-soft">
         <div className="border-b px-6 py-5">
           <h2 className="text-lg font-bold text-primary">Course Records</h2>
@@ -213,13 +200,9 @@ const Courses = () => {
                 filteredCourses.map((course) => (
                   <tr key={course.id} className="bg-background">
                     <td className="px-5 py-4">
-                      <div className="flex items-start gap-4">
-                        <div className="h-16 w-16 overflow-hidden rounded-2xl border bg-secondary">
-                          <img
-                            src={`${BASE_URL}/storage/${course.image}`}
-                            alt={course.name}
-                            className="h-full w-full object-cover"
-                          />
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-accent-soft text-accent">
+                          <UserRound className="h-5 w-5" />
                         </div>
 
                         <div>
@@ -314,179 +297,12 @@ const Courses = () => {
           </table>
         </div>
       </section>
-
       {selectedCourse && (
         <CourseDetailsModal
           course={selectedCourse}
           onClose={() => setSelectedCourse(null)}
         />
       )}
-    </div>
-  );
-};
-
-const StatusBadge = ({ status }) => {
-  return (
-    <span
-      className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${
-        status
-          ? "border-success/20 bg-success/10 text-success"
-          : "border-destructive/20 bg-destructive/10 text-destructive"
-      }`}
-    >
-      {status ? "Active" : "Inactive"}
-    </span>
-  );
-};
-
-const CourseDetailsModal = ({ course, onClose }) => {
-  return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/45 p-4">
-      <div className="max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-3xl border bg-card p-6 shadow-soft">
-        <div className="flex items-start justify-between gap-4 border-b pb-4">
-          <div>
-            <h2 className="text-xl font-bold text-primary">Course Details</h2>
-
-            <p className="mt-1 text-sm text-muted-foreground">
-              Detailed course information and curriculum.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full border bg-background px-4 py-2 text-sm font-semibold transition-smooth hover:bg-secondary"
-          >
-            Close
-          </button>
-        </div>
-
-        <div className="mt-6 grid gap-8 lg:grid-cols-[380px_minmax(0,1fr)]">
-          <div className="space-y-5">
-            <div className="overflow-hidden rounded-3xl border bg-secondary">
-              <img
-                src={`${BASE_URL}/storage/${course.image}`}
-                alt={course.name}
-                className="h-full w-full object-cover"
-              />
-            </div>
-
-            <div className="rounded-2xl border bg-background p-5">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                Faculty
-              </p>
-
-              <p className="mt-2 text-lg font-semibold text-primary">
-                {course.faculty?.name}
-              </p>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <InfoCard label="Level" value={course.level} />
-
-              <InfoCard label="Duration" value={course.duration} />
-
-              <InfoCard label="Study Mode" value={course.study_mode} />
-
-              <InfoCard
-                label="Tuition Fee"
-                value={course.tuition_fee ? `£${course.tuition_fee}` : "-"}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">
-                Course
-              </p>
-
-              <h3 className="mt-2 text-3xl font-bold text-primary">
-                {course.name}
-              </h3>
-
-              <p className="mt-2 text-sm text-muted-foreground">
-                {course.code}
-              </p>
-            </div>
-
-            <div className="rounded-2xl border bg-background p-5">
-              <h4 className="text-lg font-semibold text-primary">
-                Short Description
-              </h4>
-
-              <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                {course.short_description}
-              </p>
-            </div>
-
-            <div className="rounded-2xl border bg-background p-5">
-              <h4 className="text-lg font-semibold text-primary">
-                Full Description
-              </h4>
-
-              <p className="mt-3 whitespace-pre-line text-sm leading-7 text-muted-foreground">
-                {course.description}
-              </p>
-            </div>
-
-            <div className="rounded-2xl border bg-background p-5">
-              <div className="flex items-center gap-2">
-                <BookCopy className="h-5 w-5 text-accent" />
-
-                <h4 className="text-lg font-semibold text-primary">
-                  Curriculum
-                </h4>
-              </div>
-
-              {course.curriculums && course.curriculums.length > 0 ? (
-                <div className="mt-5 space-y-4">
-                  {course.curriculums.map((curriculum, index) => (
-                    <div
-                      key={curriculum.id || index}
-                      className="rounded-2xl border bg-secondary/30 p-4"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-foreground">
-                          {index + 1}
-                        </div>
-
-                        <div>
-                          <h5 className="font-semibold text-primary">
-                            {curriculum.title}
-                          </h5>
-
-                          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                            {curriculum.description}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="mt-4 text-sm text-muted-foreground">
-                  No curriculum added for this course.
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const InfoCard = ({ label, value }) => {
-  return (
-    <div className="rounded-2xl border bg-background p-4">
-      <p className="text-xs uppercase tracking-wide text-muted-foreground">
-        {label}
-      </p>
-
-      <p className="mt-2 text-sm font-semibold text-foreground">
-        {value || "-"}
-      </p>
     </div>
   );
 };

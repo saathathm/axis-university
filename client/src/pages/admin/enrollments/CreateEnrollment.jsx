@@ -5,11 +5,14 @@ import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 
 import { getCourses } from "../../../features/course/courseActions";
-import { createEnrollment } from "../../../features/enrollment/enrollmentActions";
+import {
+  createEnrollment,
+  updateEnrollment,
+} from "../../../features/enrollment/enrollmentActions";
 import { getStudents } from "../../../features/student/studentActions";
 import SearchableSelect from "../../../components/widgets/SearchableSelect";
 
-const CreateEnrollment = () => {
+const CreateEnrollment = ({ enrollment = null, isEdit = false }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -56,7 +59,11 @@ const CreateEnrollment = () => {
 
       setError("");
 
-      await dispatch(createEnrollment(formData));
+      if (isEdit && enrollment) {
+        await dispatch(updateEnrollment(enrollment.id, formData));
+      } else {
+        await dispatch(createEnrollment(formData));
+      }
 
       navigate("/admin/enrollments");
     } catch (err) {
@@ -65,6 +72,30 @@ const CreateEnrollment = () => {
       setLoading(false);
     }
   };
+
+  const formatDateForInput = (value) => {
+    if (!value) return "";
+
+    return String(value).split("T")[0];
+  };
+
+  useEffect(() => {
+    if (enrollment) {
+      setFormData({
+        studentId: enrollment.student?.id || enrollment.student_id || "",
+        courseId: enrollment.course?.id || enrollment.course_id || "",
+        enrollmentDate: formatDateForInput(enrollment.enrollment_date),
+        startDate: formatDateForInput(enrollment.start_date),
+        endDate: formatDateForInput(enrollment.end_date),
+        completionDate: formatDateForInput(
+          enrollment.completion_date || enrollment.completionDate,
+        ),
+        status: enrollment.status || "active",
+        grade: enrollment.grade || "",
+        adminNote: enrollment.admin_note || enrollment.adminNote || "",
+      });
+    }
+  }, [enrollment]);
 
   const studentOptions = students.map((student) => ({
     label: `${student.first_name} ${student.last_name}`,
@@ -76,6 +107,16 @@ const CreateEnrollment = () => {
     value: course.id,
   }));
 
+  const selectedStudent =
+    studentOptions.find(
+      (opt) => String(opt.value) === String(formData.studentId),
+    ) || null;
+
+  const selectedCourse =
+    courseOptions.find(
+      (opt) => String(opt.value) === String(formData.courseId),
+    ) || null;
+
   return (
     <div className="space-y-6">
       <section className="rounded-3xl border bg-card p-6 shadow-soft">
@@ -86,7 +127,7 @@ const CreateEnrollment = () => {
             </p>
 
             <h1 className="mt-2 text-2xl font-bold text-primary md:text-3xl">
-              Create Enrollment
+              {isEdit ? "Edit Enrollment" : "Create Enrollment"}
             </h1>
 
             <p className="mt-2 text-sm text-muted-foreground">
@@ -135,6 +176,7 @@ const CreateEnrollment = () => {
           <SearchableSelect
             label="Student"
             options={studentOptions}
+            value={selectedStudent}
             placeholder="Search student..."
             onChange={(selected) =>
               setFormData((current) => ({
@@ -147,6 +189,7 @@ const CreateEnrollment = () => {
           <SearchableSelect
             label="Course"
             options={courseOptions}
+            value={selectedCourse}
             placeholder="Search course..."
             onChange={(selected) =>
               setFormData((current) => ({
@@ -238,7 +281,13 @@ const CreateEnrollment = () => {
           >
             <Save className="h-4 w-4" />
 
-            {loading ? "Creating..." : "Create Enrollment"}
+            {loading
+              ? isEdit
+                ? "Saving..."
+                : "Creating..."
+              : isEdit
+                ? "Save Changes"
+                : "Create Enrollment"}
           </button>
         </div>
       </form>

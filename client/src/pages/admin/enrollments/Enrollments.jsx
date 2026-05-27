@@ -5,6 +5,7 @@ import {
   CalendarDays,
   Eye,
   GraduationCap,
+  Pencil,
   Plus,
   Search,
   Trash2,
@@ -14,8 +15,8 @@ import {
 import {
   getEnrollments,
   deleteEnrollment,
-} from "../../features/enrollment/enrollmentActions";
-import StatCard from "../../components/widgets/StatCard";
+} from "../../../features/enrollment/enrollmentActions";
+import StatCard from "../../../components/widgets/StatCard";
 import { useNavigate } from "react-router-dom";
 
 const Enrollments = () => {
@@ -270,6 +271,15 @@ const Enrollments = () => {
                           className="inline-flex h-9 w-9 items-center justify-center rounded-full border bg-card text-foreground transition-smooth hover:bg-secondary"
                         >
                           <Eye className="h-4 w-4" />
+                        </button>
+
+                        <button
+                          type="button"
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-full border bg-card text-foreground transition-smooth hover:bg-secondary"
+                          onClick={() => navigate(`/admin/enrollments/${enrollment.id}/edit`)}
+                          title="Edit enrollment"
+                        >
+                          <Pencil className="h-4 w-4" />
                         </button>
 
                         <button

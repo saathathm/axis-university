@@ -22,6 +22,7 @@ import {
   clearApplicationMessage,
 } from "../../features/application/applicationSlice";
 import StatCard from "../../components/widgets/StatCard";
+import PageHeader from "../../components/widgets/PageHeader";
 
 const Applications = () => {
   const dispatch = useDispatch();
@@ -132,24 +133,11 @@ const Applications = () => {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-3xl border bg-card p-6 shadow-soft">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">
-              Applications
-            </p>
-
-            <h1 className="mt-2 text-2xl font-bold text-primary md:text-3xl">
-              Student Applications
-            </h1>
-
-            <p className="mt-2 text-sm text-muted-foreground">
-              Review submitted applications, approve students, and create
-              enrollments.
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageHeader
+        eyebrow="Applications"
+        title="Student Applications"
+        description="Review submitted applications, approve students, and create enrollments."
+      />
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard
@@ -362,17 +350,6 @@ const Applications = () => {
           onReject={handleReject}
         />
       )}
-    </div>
-  );
-};
-
-const ApplicationCount = ({ label, value }) => {
-  return (
-    <div className="rounded-2xl border bg-background p-4">
-      <p className="text-2xl font-extrabold text-primary">{value}</p>
-      <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        {label}
-      </p>
     </div>
   );
 };

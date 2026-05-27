@@ -14,9 +14,14 @@ import {
   Users,
 } from "lucide-react";
 
-import { getStudents, deleteStudent } from "../../../features/student/studentActions";
+import {
+  getStudents,
+  deleteStudent,
+} from "../../../features/student/studentActions";
 import { useNavigate } from "react-router-dom";
 import StatCard from "../../../components/widgets/StatCard";
+import PageHeader from "../../../components/widgets/PageHeader";
+import formatDate from "../../../components/widgets/formatDate";
 
 const Students = () => {
   const dispatch = useDispatch();
@@ -83,33 +88,14 @@ const Students = () => {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-3xl border bg-card p-6 shadow-soft">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">
-              Students
-            </p>
-
-            <h1 className="mt-2 text-2xl font-bold text-primary md:text-3xl">
-              Student Records
-            </h1>
-
-            <p className="mt-2 text-sm text-muted-foreground">
-              View accepted students, contact details, and their enrollment
-              summary.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => navigate("/admin/students/create")}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-accent px-5 py-3 text-sm font-semibold text-accent-foreground shadow-soft transition-smooth hover:opacity-90"
-          >
-            <Plus className="h-4 w-4" />
-            Add Student
-          </button>
-        </div>
-      </section>
+      <PageHeader
+        eyebrow="Students"
+        title="Student Records"
+        description="View accepted students, contact details, and their enrollment summary."
+        buttonText="Add Student"
+        buttonIcon={Plus}
+        onButtonClick={() => navigate("/admin/students/create")}
+      />
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard title="Total Students" value={counts.total} icon={Users} />
@@ -156,7 +142,6 @@ const Students = () => {
           </div>
         )}
       </section>
-
       <section className="overflow-hidden rounded-3xl border bg-card shadow-soft">
         <div className="border-b px-6 py-5">
           <h2 className="text-lg font-bold text-primary">Students</h2>
@@ -261,7 +246,9 @@ const Students = () => {
                         <button
                           type="button"
                           className="inline-flex h-9 w-9 items-center justify-center rounded-full border bg-card text-foreground transition-smooth hover:bg-secondary"
-                          onClick={() => navigate(`/admin/students/${student.id}/edit`)}
+                          onClick={() =>
+                            navigate(`/admin/students/${student.id}/edit`)
+                          }
                           title="Edit student"
                         >
                           <Pencil className="h-4 w-4" />
@@ -293,25 +280,12 @@ const Students = () => {
           </table>
         </div>
       </section>
-
       {selectedStudent && (
         <StudentDetailsModal
           student={selectedStudent}
           onClose={() => setSelectedStudent(null)}
         />
       )}
-    </div>
-  );
-};
-
-const StudentCount = ({ label, value }) => {
-  return (
-    <div className="rounded-2xl border bg-background p-4">
-      <p className="text-2xl font-extrabold text-primary">{value}</p>
-
-      <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        {label}
-      </p>
     </div>
   );
 };
@@ -499,16 +473,6 @@ const StudentDetailsModal = ({ student, onClose }) => {
       </div>
     </div>
   );
-};
-
-const formatDate = (date) => {
-  if (!date) return "-";
-
-  return new Date(date).toLocaleDateString("en-GB", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-  });
 };
 
 export default Students;

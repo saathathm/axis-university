@@ -25,9 +25,9 @@ import Login from "./pages/admin/Login.jsx";
 import Dashboard from "./pages/admin/Dashboard.jsx";
 import Applications from "./pages/admin/Applications.jsx";
 import Students from "./pages/admin/students/Students.jsx";
-import Enrollments from "./pages/admin/Enrollments.jsx";
+import Enrollments from "./pages/admin/enrollments/Enrollments.jsx";
 import Faculties from "./pages/admin/faculties/Faculties.jsx";
-import Courses from "./pages/admin/Courses.jsx";
+import Courses from "./pages/admin/courses/Courses.jsx";
 import Certificates from "./pages/admin/Certificates.jsx";
 import Downloads from "./pages/admin/Downloads.jsx";
 import Testimonials from "./pages/admin/Testimonials.jsx";
@@ -37,6 +37,7 @@ import NewsletterSubscriptions from "./pages/admin/NewsletterSubscriptions.jsx";
 
 import CreateStudent from "./pages/admin/students/CreateStudent";
 import CreateEnrollment from "./pages/admin/enrollments/CreateEnrollment.jsx";
+import EditEnrollment from "./pages/admin/enrollments/EditEnrollment.jsx";
 import CreateFaculty from "./pages/admin/faculties/CreateFaculty";
 import EditFaculty from "./pages/admin/faculties/EditFaculty.jsx";
 import EditStudent from "./pages/admin/students/EditStudent";
@@ -96,6 +97,7 @@ function App() {
               path="/admin/enrollments/create"
               element={<CreateEnrollment />}
             />
+            <Route path="/admin/enrollments/:id/edit" element={<EditEnrollment />} />
             <Route path="/admin/faculties/create" element={<CreateFaculty />} />
             <Route path="/admin/faculties/:id/edit" element={<EditFaculty />} />
           </Route>
