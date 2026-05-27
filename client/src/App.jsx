@@ -39,6 +39,7 @@ import CreateStudent from "./pages/admin/students/CreateStudent";
 import CreateEnrollment from "./pages/admin/enrollments/CreateEnrollment.jsx";
 import CreateFaculty from "./pages/admin/faculties/CreateFaculty";
 import EditFaculty from "./pages/admin/faculties/EditFaculty.jsx";
+import EditStudent from "./pages/admin/students/EditStudent";
 
 function App() {
   const dispatch = useDispatch();
@@ -90,6 +91,7 @@ function App() {
               element={<NewsletterSubscriptions />}
             />
             <Route path="/admin/students/create" element={<CreateStudent />} />
+            <Route path="/admin/students/:id/edit" element={<EditStudent />} />
             <Route
               path="/admin/enrollments/create"
               element={<CreateEnrollment />}

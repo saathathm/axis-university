@@ -6,6 +6,7 @@ import {
   GraduationCap,
   Mail,
   Phone,
+  Pencil,
   Plus,
   Search,
   Trash2,
@@ -13,7 +14,7 @@ import {
   Users,
 } from "lucide-react";
 
-import { getStudents } from "../../../features/student/studentActions";
+import { getStudents, deleteStudent } from "../../../features/student/studentActions";
 import { useNavigate } from "react-router-dom";
 import StatCard from "../../../components/widgets/StatCard";
 
@@ -67,6 +68,18 @@ const Students = () => {
         .length,
     };
   }, [students]);
+
+  const handleDelete = (studentId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this student?",
+    );
+
+    if (!confirmed) return;
+
+    dispatch(deleteStudent(studentId)).then(() => {
+      dispatch(getStudents());
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -243,6 +256,24 @@ const Students = () => {
                           title="View student"
                         >
                           <Eye className="h-4 w-4" />
+                        </button>
+
+                        <button
+                          type="button"
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-full border bg-card text-foreground transition-smooth hover:bg-secondary"
+                          onClick={() => navigate(`/admin/students/${student.id}/edit`)}
+                          title="Edit student"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(student.id)}
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-destructive/30 bg-destructive/10 text-destructive transition-smooth hover:bg-destructive hover:text-destructive-foreground"
+                          title="Delete student"
+                        >
+                          <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
                     </td>

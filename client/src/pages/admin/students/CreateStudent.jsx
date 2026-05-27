@@ -3,12 +3,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { ArrowLeft, Save, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-import { createStudent } from "../../../features/student/studentActions";
+import {
+  createStudent,
+  updateStudent,
+} from "../../../features/student/studentActions";
 
 import { getCourses } from "../../../features/course/courseActions";
 import SearchableSelect from "../../../components/widgets/SearchableSelect";
 
-const CreateStudent = () => {
+const CreateStudent = ({ student = null, isEdit = false }) => {
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
@@ -38,6 +41,29 @@ const CreateStudent = () => {
     dispatch(getCourses());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (student) {
+      setFormData({
+        firstName: student.first_name || "",
+        lastName: student.last_name || "",
+        emailAddress: student.email_address || "",
+        contactNumber: student.contact_number || "",
+        passportNumber: student.passport_number || "",
+        dateOfBirth: student.date_of_birth || "",
+        streetAddress: student.street_address || "",
+        townCity: student.town_city || "",
+        country: student.country || "",
+        postcode: student.postcode || "",
+        status: student.status || "active",
+        courseId:
+          (student.enrollments && student.enrollments[0]
+            ? student.enrollments[0].course?.id ||
+              student.enrollments[0].course_id
+            : "") || "",
+      });
+    }
+  }, [student]);
+
   const handleChange = (event) => {
     const { name, value } = event.target;
 
@@ -55,7 +81,11 @@ const CreateStudent = () => {
 
       setError("");
 
-      await dispatch(createStudent(formData));
+      if (isEdit && student) {
+        await dispatch(updateStudent(student.id, formData));
+      } else {
+        await dispatch(createStudent(formData));
+      }
 
       navigate("/admin/students");
     } catch (err) {
@@ -224,17 +254,6 @@ const CreateStudent = () => {
             onChange={handleChange}
           />
 
-          {/* <FormSelect
-            label="Country"
-            name="country"
-            value={formData.country}
-            onChange={handleChange}
-            options={countryOptions.map((country) => ({
-              label: country,
-              value: country,
-            }))}
-          /> */}
-
           <SearchableSelect
             label="Country"
             options={countrySelectOptions}
@@ -310,7 +329,13 @@ const CreateStudent = () => {
           >
             <Save className="h-4 w-4" />
 
-            {loading ? "Creating..." : "Create Student"}
+            {loading
+              ? isEdit
+                ? "Updating..."
+                : "Creating..."
+              : isEdit
+                ? "Update Student"
+                : "Create Student"}
           </button>
         </div>
       </form>
