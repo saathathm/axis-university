@@ -24,7 +24,7 @@ import Verify from "./pages/student/Verify.jsx";
 import Login from "./pages/admin/Login.jsx";
 import Dashboard from "./pages/admin/Dashboard.jsx";
 import Applications from "./pages/admin/Applications.jsx";
-import Students from "./pages/admin/Students.jsx";
+import Students from "./pages/admin/students/Students.jsx";
 import Enrollments from "./pages/admin/Enrollments.jsx";
 import Faculties from "./pages/admin/faculties/Faculties.jsx";
 import Courses from "./pages/admin/Courses.jsx";

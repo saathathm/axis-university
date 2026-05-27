@@ -13,9 +13,9 @@ import {
   Users,
 } from "lucide-react";
 
-import { getStudents } from "../../features/student/studentActions";
+import { getStudents } from "../../../features/student/studentActions";
 import { useNavigate } from "react-router-dom";
-import StatCard from "../../components/widgets/StatCard";
+import StatCard from "../../../components/widgets/StatCard";
 
 const Students = () => {
   const dispatch = useDispatch();
