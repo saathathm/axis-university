@@ -24,6 +24,7 @@ import CourseDetailsModal from "../../../components/widgets/admin/course/CourseD
 import StatusBadge from "../../../components/widgets/admin/StatusBadge";
 import PageHeader from "../../../components/widgets/PageHeader";
 import { useNavigate } from "react-router-dom";
+import SearchFilterBar from "../../../components/widgets/admin/SearchFilterBar";
 
 const Courses = () => {
   const dispatch = useDispatch();
@@ -111,7 +112,7 @@ const Courses = () => {
         buttonIcon={Plus}
         onButtonClick={() => navigate("/admin/courses/create")}
       />
-      
+
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard title="Total Courses" value={stats.total} icon={BookCopy} />
 
@@ -129,41 +130,21 @@ const Courses = () => {
           icon={Users}
         />
       </section>
-      <section className="rounded-3xl border bg-card p-5 shadow-soft">
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 
-            <input
-              type="text"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search courses..."
-              className="w-full rounded-2xl border bg-background px-11 py-3 text-sm outline-none transition-smooth focus:border-accent"
-            />
-          </div>
+      <SearchFilterBar
+        search={search}
+        setSearch={setSearch}
+        statusFilter={selectedFaculty}
+        setStatusFilter={setSelectedFaculty}
+        searchPlaceholder="Search courses..."
+        filterAllName="All Faculties"
+        statusOptions={faculties.map((faculty) => ({
+          label: faculty.name,
+          value: faculty.id,
+        }))}
+        error={error}
+      />
 
-          <select
-            value={selectedFaculty}
-            onChange={(event) => setSelectedFaculty(event.target.value)}
-            className="rounded-2xl border bg-background px-4 py-3 text-sm outline-none transition-smooth focus:border-accent"
-          >
-            <option value="">All Faculties</option>
-
-            {faculties.map((faculty) => (
-              <option key={faculty.id} value={faculty.id}>
-                {faculty.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {error && (
-          <div className="mt-4 rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-            {error}
-          </div>
-        )}
-      </section>
       <section className="overflow-hidden rounded-3xl border bg-card shadow-soft">
         <div className="border-b px-6 py-5">
           <h2 className="text-lg font-bold text-primary">Course Records</h2>

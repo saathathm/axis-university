@@ -23,6 +23,7 @@ import {
 } from "../../features/application/applicationSlice";
 import StatCard from "../../components/widgets/StatCard";
 import PageHeader from "../../components/widgets/PageHeader";
+import SearchFilterBar from "../../components/widgets/admin/SearchFilterBar";
 
 const Applications = () => {
   const dispatch = useDispatch();
@@ -153,43 +154,28 @@ const Applications = () => {
         <StatCard title="Rejected" value={counts.rejected} icon={Trash2} />
       </section>
 
-      <section className="rounded-3xl border bg-card p-5 shadow-soft">
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-
-            <input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search by name, email, application no, passport, or course..."
-              className="w-full rounded-2xl border bg-background px-11 py-3 text-sm outline-none transition-smooth focus:border-accent"
-            />
-          </div>
-
-          <select
-            value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value)}
-            className="rounded-2xl border bg-background px-4 py-3 text-sm outline-none transition-smooth focus:border-accent"
-          >
-            <option value="">All Status</option>
-            <option value="pending">Pending</option>
-            <option value="enrolled">Enrolled</option>
-            <option value="rejected">Rejected</option>
-          </select>
-        </div>
-
-        {pageMessage && (
-          <div
-            className={`mt-4 rounded-2xl border px-4 py-3 text-sm ${
-              pageMessage.type === "error"
-                ? "border-destructive/30 bg-destructive/10 text-destructive"
-                : "border-success/30 bg-success/10 text-success"
-            }`}
-          >
-            {pageMessage.message}
-          </div>
-        )}
-      </section>
+      <SearchFilterBar
+        search={search}
+        setSearch={setSearch}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        searchPlaceholder="Search by name, email, application no, passport, or course..."
+        statusOptions={[
+          {
+            label: "Pending",
+            value: "pending",
+          },
+          {
+            label: "Enrolled",
+            value: "enrolled",
+          },
+          {
+            label: "Rejected",
+            value: "rejected",
+          },
+        ]}
+        message={pageMessage}
+      />
 
       <section className="overflow-hidden rounded-3xl border bg-card shadow-soft">
         <div className="border-b px-6 py-5">

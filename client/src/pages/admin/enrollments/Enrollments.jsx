@@ -19,6 +19,7 @@ import {
 import StatCard from "../../../components/widgets/StatCard";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../../components/widgets/PageHeader";
+import SearchFilterBar from "../../../components/widgets/admin/SearchFilterBar";
 
 const Enrollments = () => {
   const dispatch = useDispatch();
@@ -119,38 +120,29 @@ const Enrollments = () => {
 
         <StatCard title="Withdrawn" value={stats.withdrawn} icon={Trash2} />
       </section>
-      <section className="rounded-3xl border bg-card p-5 shadow-soft">
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 
-            <input
-              type="text"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search student, course, or enrollment number..."
-              className="w-full rounded-2xl border bg-background px-11 py-3 text-sm outline-none transition-smooth focus:border-accent"
-            />
-          </div>
-
-          <select
-            value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value)}
-            className="rounded-2xl border bg-background px-4 py-3 text-sm outline-none transition-smooth focus:border-accent"
-          >
-            <option value="">All Status</option>
-            <option value="active">Active</option>
-            <option value="completed">Completed</option>
-            <option value="withdrawn">Withdrawn</option>
-          </select>
-        </div>
-
-        {error && (
-          <div className="mt-4 rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-            {error}
-          </div>
-        )}
-      </section>
+      <SearchFilterBar
+        search={search}
+        setSearch={setSearch}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        searchPlaceholder="Search student, course, or enrollment number..."
+        statusOptions={[
+          {
+            label: "Active",
+            value: "active",
+          },
+          {
+            label: "Completed",
+            value: "completed",
+          },
+          {
+            label: "Withdrawn",
+            value: "withdrawn",
+          },
+        ]}
+        error={error}
+      />
       <section className="overflow-hidden rounded-3xl border bg-card shadow-soft">
         <div className="border-b px-6 py-5">
           <h2 className="text-lg font-bold text-primary">Enrollment Records</h2>
