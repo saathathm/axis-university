@@ -230,7 +230,9 @@ const Courses = () => {
 
                     <td className="px-5 py-4">
                       <span className="font-semibold text-primary">
-                        {course.tuition_fee ? `£${course.tuition_fee}` : "-"}
+                        {course.fee
+                          ? `${Number(course.fee).toLocaleString()}`
+                          : "-"}
                       </span>
                     </td>
 
@@ -250,6 +252,9 @@ const Courses = () => {
 
                         <button
                           type="button"
+                          onClick={() =>
+                            navigate(`/admin/courses/${course.id}/edit`)
+                          }
                           className="inline-flex h-9 w-9 items-center justify-center rounded-full border bg-card text-foreground transition-smooth hover:bg-secondary"
                         >
                           <Pencil className="h-4 w-4" />

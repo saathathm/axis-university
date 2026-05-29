@@ -48,7 +48,9 @@ const CourseDetailsModal = ({ course, onClose }) => {
 
               <InfoCard
                 label="Tuition Fee"
-                value={course.tuition_fee ? `£${course.tuition_fee}` : "-"}
+                value={
+                  course.fee ? `${Number(course.fee).toLocaleString()}` : "-"
+                }
               />
             </div>
           </div>

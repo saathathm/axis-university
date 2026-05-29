@@ -6,6 +6,7 @@ import {
   CalendarDays,
   Eye,
   GraduationCap,
+  Pencil,
   Plus,
   Search,
   ShieldCheck,
@@ -104,32 +105,6 @@ const Certificates = () => {
 
   return (
     <div className="space-y-6">
-      {/* <section className="rounded-3xl border bg-card p-6 shadow-soft">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">
-              Certificates
-            </p>
-
-            <h1 className="mt-2 text-2xl font-bold text-primary md:text-3xl">
-              Certificate Management
-            </h1>
-
-            <p className="mt-2 text-sm text-muted-foreground">
-              Manage, verify, track and maintain issued student certificates.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-accent px-5 py-3 text-sm font-semibold text-accent-foreground shadow-soft transition-smooth hover:opacity-90"
-          >
-            <Plus className="h-4 w-4" />
-            Issue Certificate
-          </button>
-        </div>
-      </section> */}
-
       <PageHeader
         eyebrow="Certificates"
         title="Certificate Management"
@@ -390,6 +365,18 @@ const Certificates = () => {
 
                         <button
                           type="button"
+                          onClick={() =>
+                            navigate(
+                              `/admin/certificates/${certificate.id}/edit`,
+                            )
+                          }
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-full border bg-card text-foreground transition-smooth hover:bg-secondary"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+
+                        <button
+                          type="button"
                           onClick={() => handleDelete(certificate.id)}
                           className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-destructive/30 bg-destructive/10 text-destructive transition-smooth hover:bg-destructive hover:text-destructive-foreground"
                         >
@@ -549,11 +536,6 @@ const CertificateDetailsModal = ({ certificate, onClose }) => {
 
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 <DetailCard
-                  label="Faculty"
-                  value={certificate.enrollment?.course?.faculty?.name}
-                />
-
-                <DetailCard
                   label="Study Mode"
                   value={certificate.enrollment?.course?.study_mode}
                 />
@@ -582,7 +564,7 @@ const CertificateDetailsModal = ({ certificate, onClose }) => {
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 <DetailCard
                   label="Email"
-                  value={certificate.enrollment?.student?.email}
+                  value={certificate.enrollment?.student?.email_address}
                 />
 
                 <DetailCard

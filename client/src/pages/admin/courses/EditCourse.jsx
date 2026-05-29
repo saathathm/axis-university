@@ -1,28 +1,29 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import CreateFaculty from "./CreateFaculty";
-import { getFacultyDetails } from "../../../features/faculty/facultyActions";
+
+import CreateCourse from "./CreateCourse";
+
+import { getCourseDetails } from "../../../features/course/courseActions";
+
 import LoadingSpinner from "../../../components/widgets/LoadingSpinner";
 
-const EditFaculty = () => {
+const EditCourse = () => {
   const dispatch = useDispatch();
 
   const { id } = useParams();
 
-  const { faculty = null, loading } = useSelector(
-    (state) => state.facultyState,
-  );
+  const { course = null, loading } = useSelector((state) => state.courseState);
 
   useEffect(() => {
-    dispatch(getFacultyDetails(id));
+    dispatch(getCourseDetails(id));
   }, [dispatch, id]);
 
   if (loading) {
     return <LoadingSpinner />;
   }
 
-  return <CreateFaculty faculty={faculty} isEdit />;
+  return <CreateCourse course={course} isEdit />;
 };
 
-export default EditFaculty;
+export default EditCourse;

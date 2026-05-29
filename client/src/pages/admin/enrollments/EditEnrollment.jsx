@@ -7,6 +7,7 @@ import LoadingSpinner from "../../../components/widgets/LoadingSpinner";
 
 const EditEnrollment = () => {
   const dispatch = useDispatch();
+
   const { id } = useParams();
 
   const { enrollment = null, loading } = useSelector(

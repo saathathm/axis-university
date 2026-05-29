@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import {
+  AlignEndVertical,
   Award,
   BookOpen,
   Download,
@@ -46,14 +47,14 @@ const navItems = [
     icon: BookOpen,
   },
   {
-    label: "Certificates",
-    path: "/admin/certificates",
-    icon: FileCheck,
-  },
-  {
     label: "Downloads",
     path: "/admin/downloads",
     icon: Download,
+  },
+  {
+    label: "Certificates",
+    path: "/admin/certificates",
+    icon: FileCheck,
   },
   {
     label: "Testimonials",

@@ -11,6 +11,8 @@ import messageReducer from "../features/message/messageSlice";
 import certificateReducer from "../features/certificate/certificateSlice";
 import studentReducer from "../features/student/studentSlice";
 import enrollmentReducer from "../features/enrollment/enrollmentSlice";
+// import courseCurriculumReducer from "../features/courseCurriculum/courseCurriculumSlice";
+
 
 const reducer = combineReducers({
   authState: authReducer,
@@ -25,6 +27,7 @@ const reducer = combineReducers({
   newsletterState: newsletterReducer,
   messageState: messageReducer,
   certificateState: certificateReducer,
+  // courseCurriculumState: courseCurriculumReducer,
 });
 
 const store = configureStore({ reducer });
