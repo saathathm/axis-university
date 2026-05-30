@@ -17,104 +17,81 @@ import {
   Users,
 } from "lucide-react";
 
-import { getCourses } from "../../features/course/courseActions";
-import { getApplications } from "../../features/application/applicationActions";
-import { getCertificates } from "../../features/certificate/certificateActions";
-import { getDownloads } from "../../features/download/downloadActions";
-import { getMessages } from "../../features/message/messageActions";
-import { getNewsletterSubscriptions } from "../../features/newsletter/newsletterActions";
+import { getDashboardData } from "../../features/dashboard/dashboardActions";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
 
-  const { courses = [] } = useSelector((state) => state.courseState);
-  const { applications = [] } = useSelector((state) => state.applicationState);
-  const { certificates = [] } = useSelector((state) => state.certificateState);
-  const { downloads = [] } = useSelector((state) => state.downloadState);
-  const { messages = [] } = useSelector((state) => state.messageState);
-  const { subscriptions = [] } = useSelector((state) => state.newsletterState);
+  const { data: dashboardData = null, loading } = useSelector(
+    (state) => state.dashboardState,
+  );
 
   useEffect(() => {
-    dispatch(getCourses());
-    dispatch(getApplications());
-    dispatch(getCertificates());
-    dispatch(getDownloads());
-    dispatch(getMessages());
-    dispatch(getNewsletterSubscriptions());
+    dispatch(getDashboardData());
   }, [dispatch]);
 
   const stats = useMemo(() => {
-    const pendingApplications = applications.filter(
-      (application) => application.status === "pending",
-    ).length;
+    const summary = dashboardData || {};
 
-    const enrolledApplications = applications.filter(
-      (application) => application.status === "enrolled",
-    ).length;
-
-    const unreadMessages = messages.filter(
-      (message) => message.status === "unread",
-    ).length;
-
-    const validCertificates = certificates.filter(
-      (certificate) => certificate.status === "valid",
-    ).length;
+    const applications = summary.applications || {};
+    const certificates = summary.certificates || {};
+    const messages = summary.messages || {};
 
     return [
       {
         label: "Total Courses",
-        value: courses.length,
+        value: summary.courses || 0,
         icon: BookOpen,
         path: "/admin/courses",
         helper: "Published and managed courses",
       },
       {
         label: "Applications",
-        value: applications.length,
+        value: applications.total || 0,
         icon: FileText,
         path: "/admin/applications",
-        helper: `${pendingApplications} pending review`,
+        helper: `${applications.pending || 0} pending review`,
       },
       {
         label: "Enrolled",
-        value: enrolledApplications,
+        value: applications.enrolled || 0,
         icon: GraduationCap,
         path: "/admin/enrollments",
         helper: "Approved student applications",
       },
       {
         label: "Certificates",
-        value: validCertificates,
+        value: certificates.valid || 0,
         icon: FileCheck,
         path: "/admin/certificates",
         helper: "Valid certificates issued",
       },
       {
         label: "Downloads",
-        value: downloads.length,
+        value: summary.downloads || 0,
         icon: Download,
         path: "/admin/downloads",
         helper: "Course resources and files",
       },
       {
         label: "Messages",
-        value: messages.length,
+        value: messages.total || 0,
         icon: MessageSquare,
         path: "/admin/messages",
-        helper: `${unreadMessages} unread messages`,
+        helper: `${messages.unread || 0} unread messages`,
       },
       {
         label: "Newsletter",
-        value: subscriptions.length,
+        value: summary.newsletterSubscriptions || 0,
         icon: Mail,
         path: "/admin/newsletter-subscriptions",
         helper: "Subscribed users",
       },
     ];
-  }, [applications, certificates, courses, downloads, messages, subscriptions]);
+  }, [dashboardData]);
 
-  const recentApplications = applications.slice(0, 5);
-  const recentMessages = messages.slice(0, 5);
+  const recentApplications = dashboardData?.recentApplications || [];
+  const recentMessages = dashboardData?.recentMessages || [];
 
   return (
     <div className="space-y-8">
@@ -213,7 +190,16 @@ const Dashboard = () => {
                 </thead>
 
                 <tbody className="divide-y">
-                  {recentApplications.length > 0 ? (
+                  {loading ? (
+                    <tr>
+                      <td
+                        colSpan="4"
+                        className="bg-background px-4 py-8 text-center text-muted-foreground"
+                      >
+                        Loading dashboard...
+                      </td>
+                    </tr>
+                  ) : recentApplications.length > 0 ? (
                     recentApplications.map((application) => (
                       <tr key={application.id} className="bg-background">
                         <td className="px-4 py-4">
@@ -325,7 +311,11 @@ const Dashboard = () => {
             </div>
 
             <div className="mt-5 space-y-3">
-              {recentMessages.length > 0 ? (
+              {loading ? (
+                <p className="rounded-2xl border bg-background p-5 text-center text-sm text-muted-foreground">
+                  Loading dashboard...
+                </p>
+              ) : recentMessages.length > 0 ? (
                 recentMessages.map((message) => (
                   <div
                     key={message.id}

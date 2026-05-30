@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\RecognitionController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\NewsletterSubscriptionController;
 use App\Http\Controllers\Api\CourseCurriculumController;
+use App\Http\Controllers\Api\DashboardController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -54,6 +55,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
 
     Route::middleware('can:manage-admin-data')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index']);
+
         // Admin create/update/delete only
         Route::apiResource('/faculties', FacultyController::class)->except(['index', 'show']);
         Route::apiResource('/courses', CourseController::class)->except(['index', 'show']);
