@@ -6,6 +6,7 @@ const downloadSlice = createSlice({
     loading: false,
     downloads: [],
     download: null,
+    downloadEditData: null,
   },
   reducers: {
     getDownloadsRequest(state, actions) {
@@ -47,6 +48,29 @@ const downloadSlice = createSlice({
     },
 
     getDownloadDetailsFailure(state, actions) {
+      return {
+        ...state,
+        error: actions.payload,
+        loading: false,
+      };
+    },
+
+    getDownloadEditDataRequest(state, actions) {
+      return {
+        ...state,
+        loading: true,
+      };
+    },
+
+    getDownloadEditDataSuccess(state, actions) {
+      return {
+        ...state,
+        downloadEditData: actions.payload,
+        loading: false,
+      };
+    },
+
+    getDownloadEditDataFailure(state, actions) {
       return {
         ...state,
         error: actions.payload,
@@ -130,6 +154,13 @@ const downloadSlice = createSlice({
       };
     },
 
+    clearDownloadEditData(state, actions) {
+      return {
+        ...state,
+        downloadEditData: null,
+      };
+    },
+
     clearDownloadMessage(state, actions) {
       return {
         ...state,
@@ -153,6 +184,9 @@ export const {
   getDownloadDetailsRequest,
   getDownloadDetailsSuccess,
   getDownloadDetailsFailure,
+  getDownloadEditDataRequest,
+  getDownloadEditDataSuccess,
+  getDownloadEditDataFailure,
   createDownloadRequest,
   createDownloadSuccess,
   createDownloadFailure,
@@ -163,6 +197,7 @@ export const {
   deleteDownloadSuccess,
   deleteDownloadFailure,
   clearDownloadDetails,
+  clearDownloadEditData,
   clearDownloadMessage,
   clearDownloadError,
 } = downloadSlice.actions;

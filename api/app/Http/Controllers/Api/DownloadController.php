@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Download;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Helpers\FileUploadHelper;
 use App\Http\Controllers\Controller;
 
@@ -24,7 +25,11 @@ class DownloadController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'courseId' => ['required', 'exists:courses,id'],
+            'courseId' => [
+                'required',
+                'exists:courses,id',
+                Rule::unique('downloads', 'course_id'),
+            ],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'file' => ['required', 'file', 'mimes:pdf,doc,docx,jpg,jpeg,png,webp', 'max:5120'],
@@ -52,10 +57,35 @@ class DownloadController extends Controller
         return $this->successResponse($download, 'Download fetched successfully');
     }
 
+    public function editData(Download $download)
+    {
+        $download->load('course');
+
+        $courses = \App\Models\Course::with('download')
+            ->latest()
+            ->get();
+
+        $availableCourses = $courses->filter(function ($course) use ($download) {
+            return (int) $course->id === (int) $download->course_id || !$course->download;
+        })->values();
+
+        return $this->successResponse([
+            'download' => $download,
+            'courses' => $courses,
+            'availableCourses' => $availableCourses,
+        ], 'Download edit data fetched successfully');
+    }
+
     public function update(Request $request, Download $download)
     {
         $validated = $request->validate([
-            'courseId' => ['required', 'exists:courses,id'],
+            'courseId' => [
+                'required',
+                'exists:courses,id',
+                Rule::unique('downloads', 'course_id')
+                    ->ignore($download->id)
+                    ->where(fn ($query) => $query->where('course_id', $request->courseId)),
+            ],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'file' => ['nullable', 'file', 'mimes:pdf,doc,docx,jpg,jpeg,png,webp', 'max:5120'],

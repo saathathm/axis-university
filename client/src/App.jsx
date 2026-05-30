@@ -30,6 +30,8 @@ import Faculties from "./pages/admin/faculties/Faculties.jsx";
 import Courses from "./pages/admin/courses/Courses.jsx";
 import Certificates from "./pages/admin/certificates/Certificates.jsx";
 import Downloads from "./pages/admin/downloads/Downloads.jsx";
+import CreateDownload from "./pages/admin/downloads/CreateDownload.jsx";
+import EditDownload from "./pages/admin/downloads/EditDownload.jsx";
 import Testimonials from "./pages/admin/testimonials/Testimonials.jsx";
 import RecognitionsAdmin from "./pages/admin/recognitions/Recognitions.jsx";
 import Messages from "./pages/admin/Messages.jsx";
@@ -91,6 +93,8 @@ function App() {
             <Route path="/admin/courses" element={<Courses />} />
             <Route path="/admin/certificates" element={<Certificates />} />
             <Route path="/admin/downloads" element={<Downloads />} />
+            <Route path="/admin/downloads/create" element={<CreateDownload />} />
+            <Route path="/admin/downloads/:id/edit" element={<EditDownload />} />
             <Route path="/admin/testimonials" element={<Testimonials />} />
             <Route path="/admin/recognitions" element={<RecognitionsAdmin />} />
             <Route path="/admin/messages" element={<Messages />} />

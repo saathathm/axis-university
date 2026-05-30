@@ -5,6 +5,9 @@ import {
   getDownloadDetailsRequest,
   getDownloadDetailsSuccess,
   getDownloadDetailsFailure,
+  getDownloadEditDataRequest,
+  getDownloadEditDataSuccess,
+  getDownloadEditDataFailure,
   createDownloadRequest,
   createDownloadSuccess,
   createDownloadFailure,
@@ -45,6 +48,24 @@ export const getDownloadDetails = (downloadId) => async (dispatch) => {
     dispatch(
       getDownloadDetailsFailure(
         error.response?.data?.message || "Failed to fetch download details",
+      ),
+    );
+  }
+};
+
+export const getDownloadEditData = (downloadId) => async (dispatch) => {
+  try {
+    dispatch(getDownloadEditDataRequest());
+
+    const { data } = await axiosInstance.get(
+      `/api/downloads/${downloadId}/edit-data`,
+    );
+
+    dispatch(getDownloadEditDataSuccess(data.data));
+  } catch (error) {
+    dispatch(
+      getDownloadEditDataFailure(
+        error.response?.data?.message || "Failed to fetch download edit data",
       ),
     );
   }

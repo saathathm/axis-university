@@ -19,7 +19,7 @@ class CourseController extends Controller
             'facultyId' => ['nullable', 'exists:faculties,id'],
         ]);
 
-        $courses = Course::with('faculty')
+        $courses = Course::with(['faculty', 'downloads'])
             ->when($request->search, function ($query) use ($request) {
                 $search = $request->search;
 

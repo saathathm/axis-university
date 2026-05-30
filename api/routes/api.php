@@ -41,6 +41,7 @@ Route::get('/certificates/{certificate}', [CertificateController::class, 'show']
 
 Route::get('/downloads', [DownloadController::class, 'index']);
 Route::get('/downloads/{download}', [DownloadController::class, 'show']);
+Route::get('/downloads/{download}/edit-data', [DownloadController::class, 'editData']);
 
 Route::get('/recognitions', [RecognitionController::class, 'index']);
 Route::get('/recognitions/{recognition}', [RecognitionController::class, 'show']);

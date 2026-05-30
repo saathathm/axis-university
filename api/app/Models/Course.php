@@ -49,6 +49,11 @@ class Course extends Model
         return $this->hasMany(Download::class);
     }
 
+    public function download()
+    {
+        return $this->hasOne(Download::class);
+    }
+
     public function curriculums()
     {
         return $this->hasMany(CourseCurriculum::class)->orderBy('sort_order');

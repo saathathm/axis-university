@@ -7,6 +7,7 @@ import {
   Eye,
   FileText,
   FolderOpen,
+  Pencil,
   Plus,
   Search,
   Trash2,
@@ -212,6 +213,15 @@ const Downloads = () => {
                           className="inline-flex h-9 w-9 items-center justify-center rounded-full border bg-card text-foreground transition-smooth hover:bg-secondary"
                         >
                           <Eye className="h-4 w-4" />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/admin/downloads/${download.id}/edit`)}
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-full border bg-card text-foreground transition-smooth hover:bg-secondary"
+                          title="Edit download"
+                        >
+                          <Pencil className="h-4 w-4" />
                         </button>
 
                         <button
