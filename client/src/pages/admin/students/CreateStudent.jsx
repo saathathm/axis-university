@@ -312,18 +312,20 @@ const CreateStudent = ({ student = null, isEdit = false }) => {
             ]}
           />
 
-          <SearchableSelect
-            label="Course"
-            options={courseOptions}
-            value={selectedCourse}
-            placeholder="Search course..."
-            onChange={(selected) =>
-              setFormData((current) => ({
-                ...current,
-                courseId: selected?.value || "",
-              }))
-            }
-          />
+          {!isEdit ? (
+            <SearchableSelect
+              label="Course"
+              options={courseOptions}
+              value={selectedCourse}
+              placeholder="Search course..."
+              onChange={(selected) =>
+                setFormData((current) => ({
+                  ...current,
+                  courseId: selected?.value || "",
+                }))
+              }
+            />
+          ) : null}
         </div>
 
         <div className="mt-5">
