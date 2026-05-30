@@ -36,6 +36,8 @@ import Testimonials from "./pages/admin/testimonials/Testimonials.jsx";
 import CreateTestimonial from "./pages/admin/testimonials/CreateTestimonial.jsx";
 import EditTestimonial from "./pages/admin/testimonials/EditTestimonial.jsx";
 import RecognitionsAdmin from "./pages/admin/recognitions/Recognitions.jsx";
+import CreateRecognition from "./pages/admin/recognitions/CreateRecognition.jsx";
+import EditRecognition from "./pages/admin/recognitions/EditRecognition.jsx";
 import Messages from "./pages/admin/Messages.jsx";
 import NewsletterSubscriptions from "./pages/admin/NewsletterSubscriptions.jsx";
 
@@ -101,6 +103,8 @@ function App() {
             <Route path="/admin/testimonials/create" element={<CreateTestimonial />} />
             <Route path="/admin/testimonials/:id/edit" element={<EditTestimonial />} />
             <Route path="/admin/recognitions" element={<RecognitionsAdmin />} />
+            <Route path="/admin/recognitions/create" element={<CreateRecognition />} />
+            <Route path="/admin/recognitions/:id/edit" element={<EditRecognition />} />
             <Route path="/admin/messages" element={<Messages />} />
             <Route
               path="/admin/newsletter-subscriptions"

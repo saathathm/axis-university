@@ -216,6 +216,14 @@ const Recognitions = () => {
 
                         <button
                           type="button"
+                          onClick={() => navigate(`/admin/recognitions/${recognition.id}/edit`)}
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-full border bg-card text-foreground transition-smooth hover:bg-secondary"
+                        >
+                          <Medal className="h-4 w-4" />
+                        </button>
+
+                        <button
+                          type="button"
                           onClick={() => handleDelete(recognition.id)}
                           className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-destructive/30 bg-destructive/10 text-destructive transition-smooth hover:bg-destructive hover:text-destructive-foreground"
                         >
