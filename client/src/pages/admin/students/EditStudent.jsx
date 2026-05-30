@@ -9,7 +9,7 @@ const EditStudent = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
 
-  const { student = null, loading } = useSelector(
+  const { student = null } = useSelector(
     (state) => state.studentState,
   );
 
@@ -17,7 +17,7 @@ const EditStudent = () => {
     dispatch(getStudentDetails(id));
   }, [dispatch, id]);
 
-  if (loading) {
+  if (!student?.id) {
     return <LoadingSpinner />;
   }
 

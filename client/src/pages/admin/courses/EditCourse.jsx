@@ -13,13 +13,13 @@ const EditCourse = () => {
 
   const { id } = useParams();
 
-  const { course = null, loading } = useSelector((state) => state.courseState);
+  const { course = null } = useSelector((state) => state.courseState);
 
   useEffect(() => {
     dispatch(getCourseDetails(id));
   }, [dispatch, id]);
 
-  if (loading) {
+  if (!course?.id) {
     return <LoadingSpinner />;
   }
 

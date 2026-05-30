@@ -10,7 +10,7 @@ const EditEnrollment = () => {
 
   const { id } = useParams();
 
-  const { enrollment = null, loading } = useSelector(
+  const { enrollment = null } = useSelector(
     (state) => state.enrollmentState,
   );
 
@@ -18,7 +18,7 @@ const EditEnrollment = () => {
     dispatch(getEnrollmentDetails(id));
   }, [dispatch, id]);
 
-  if (loading) {
+  if (!enrollment?.id) {
     return <LoadingSpinner />;
   }
 

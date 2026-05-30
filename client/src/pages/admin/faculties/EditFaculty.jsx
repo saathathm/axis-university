@@ -10,7 +10,7 @@ const EditFaculty = () => {
 
   const { id } = useParams();
 
-  const { faculty = null, loading } = useSelector(
+  const { faculty = null } = useSelector(
     (state) => state.facultyState,
   );
 
@@ -18,7 +18,7 @@ const EditFaculty = () => {
     dispatch(getFacultyDetails(id));
   }, [dispatch, id]);
 
-  if (loading) {
+  if (!faculty?.id) {
     return <LoadingSpinner />;
   }
 

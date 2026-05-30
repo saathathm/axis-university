@@ -13,7 +13,7 @@ const EditCertificate = () => {
 
   const { id } = useParams();
 
-  const { certificate = null, loading } = useSelector(
+  const { certificate = null } = useSelector(
     (state) => state.certificateState,
   );
 
@@ -21,7 +21,7 @@ const EditCertificate = () => {
     dispatch(getCertificateDetails(id));
   }, [dispatch, id]);
 
-  if (loading) {
+  if (!certificate?.id) {
     return <LoadingSpinner />;
   }
 
