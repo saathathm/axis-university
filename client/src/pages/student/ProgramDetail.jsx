@@ -199,15 +199,7 @@ const ProgramDetail = () => {
                   <Download className="h-4 w-4" />
                   Download Brochure
                 </a>
-              ) : (
-                <Link
-                  to="/download"
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-primary/20 bg-background px-5 py-3 text-sm font-semibold text-primary transition-smooth hover:bg-secondary"
-                >
-                  <Download className="h-4 w-4" />
-                  Download Brochure
-                </Link>
-              )}
+              ) : (null)}
 
               <Link
                 to={applyUrl}
