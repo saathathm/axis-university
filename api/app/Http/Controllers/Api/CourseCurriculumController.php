@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Course;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Models\CourseCurriculum;
 use App\Http\Controllers\Controller;
 
@@ -15,7 +16,6 @@ class CourseCurriculumController extends Controller
     public function index(Course $course)
     {
         $curriculums = $course->curriculums()
-            ->where('status', true)
             ->orderBy('sort_order')
             ->get();
 
@@ -28,7 +28,14 @@ class CourseCurriculumController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'duration' => ['nullable', 'string', 'max:255'],
-            'sortOrder' => ['nullable', 'integer', 'min:0'],
+            'sortOrder' => [
+                'required',
+                'integer',
+                'min:1',
+                Rule::unique('course_curriculums', 'sort_order')->where(
+                    fn ($query) => $query->where('course_id', $course->id),
+                ),
+            ],
             'status' => ['nullable', 'boolean'],
         ]);
 
@@ -57,7 +64,14 @@ class CourseCurriculumController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'duration' => ['nullable', 'string', 'max:255'],
-            'sortOrder' => ['nullable', 'integer', 'min:0'],
+            'sortOrder' => [
+                'required',
+                'integer',
+                'min:1',
+                Rule::unique('course_curriculums', 'sort_order')
+                    ->ignore($courseCurriculum->id)
+                    ->where(fn ($query) => $query->where('course_id', $courseCurriculum->course_id)),
+            ],
             'status' => ['nullable', 'boolean'],
         ]);
 

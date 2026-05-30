@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   BookCopy,
+  BookOpen,
   Clock3,
   Eye,
   GraduationCap,
@@ -102,6 +103,10 @@ const Courses = () => {
     });
   };
 
+  const handleCurriculums = (courseId) => {
+    navigate(`/admin/courses/${courseId}/curriculums`);
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -160,12 +165,9 @@ const Courses = () => {
               <tr>
                 <th className="px-5 py-4">Course</th>
                 <th className="px-5 py-4">Faculty</th>
-                <th className="px-5 py-4">Level</th>
                 <th className="px-5 py-4">Duration</th>
                 <th className="px-5 py-4">Study Mode</th>
-                <th className="px-5 py-4">Tuition Fee</th>
-                <th className="px-5 py-4">Status</th>
-                <th className="px-5 py-4 text-right">Actions</th>
+                <th className="px-5 py-4 text-center">Actions</th>
               </tr>
             </thead>
 
@@ -184,9 +186,6 @@ const Courses = () => {
                   <tr key={course.id} className="bg-background">
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-4">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-accent-soft text-accent">
-                          <UserRound className="h-5 w-5" />
-                        </div>
 
                         <div>
                           <h3 className="font-semibold text-foreground">
@@ -211,12 +210,6 @@ const Courses = () => {
                     </td>
 
                     <td className="px-5 py-4">
-                      <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-foreground">
-                        {course.level}
-                      </span>
-                    </td>
-
-                    <td className="px-5 py-4">
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Clock3 className="h-4 w-4" />
 
@@ -229,19 +222,17 @@ const Courses = () => {
                     </td>
 
                     <td className="px-5 py-4">
-                      <span className="font-semibold text-primary">
-                        {course.fee
-                          ? `${Number(course.fee).toLocaleString()}`
-                          : "-"}
-                      </span>
-                    </td>
-
-                    <td className="px-5 py-4">
-                      <StatusBadge status={course.status} />
-                    </td>
-
-                    <td className="px-5 py-4">
                       <div className="flex justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleCurriculums(course.id)}
+                          className="inline-flex items-center gap-2 rounded-full border bg-card px-3 py-2 text-xs font-semibold text-foreground transition-smooth hover:bg-secondary"
+                          title="Manage curriculums"
+                        >
+                          <BookOpen className="h-4 w-4" />
+                          Curriculums
+                        </button>
+
                         <button
                           type="button"
                           onClick={() => setSelectedCourse(course)}
@@ -289,6 +280,7 @@ const Courses = () => {
         <CourseDetailsModal
           course={selectedCourse}
           onClose={() => setSelectedCourse(null)}
+          onClick={() => handleCurriculums(selectedCourse.id)}
         />
       )}
     </div>

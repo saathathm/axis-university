@@ -1,7 +1,7 @@
 import { BookCopy, BookOpen, UserRound } from "lucide-react";
 import InfoCard from "./InfoCard";
 
-const CourseDetailsModal = ({ course, onClose }) => {
+const CourseDetailsModal = ({ course, onClose, onClick = () => {} }) => {
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/45 p-4">
       <div className="max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-3xl border bg-card p-6 shadow-soft">
@@ -90,45 +90,14 @@ const CourseDetailsModal = ({ course, onClose }) => {
               </p>
             </div>
 
-            <div className="rounded-2xl border bg-background p-5">
+            <div className="rounded-2xl border bg-background p-5" onClick={onClick}>
               <div className="flex items-center gap-2">
                 <BookCopy className="h-5 w-5 text-accent" />
 
                 <h4 className="text-lg font-semibold text-primary">
-                  Curriculum
+                  Curriculums
                 </h4>
               </div>
-
-              {course.curriculums && course.curriculums.length > 0 ? (
-                <div className="mt-5 space-y-4">
-                  {course.curriculums.map((curriculum, index) => (
-                    <div
-                      key={curriculum.id || index}
-                      className="rounded-2xl border bg-secondary/30 p-4"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-foreground">
-                          {index + 1}
-                        </div>
-
-                        <div>
-                          <h5 className="font-semibold text-primary">
-                            {curriculum.title}
-                          </h5>
-
-                          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                            {curriculum.description}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="mt-4 text-sm text-muted-foreground">
-                  No curriculum added for this course.
-                </p>
-              )}
             </div>
           </div>
         </div>

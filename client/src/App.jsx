@@ -45,6 +45,9 @@ import CreateCourse from "./pages/admin/courses/CreateCourse";
 import EditCourse from "./pages/admin/courses/EditCourse";
 import CreateCertificate from "./pages/admin/certificates/CreateCertificate";
 import EditCertificate from "./pages/admin/certificates/EditCertificate";
+import CourseCurriculums from "./pages/admin/course-curriculums/CourseCurriculums.jsx";
+import CreateCourseCurriculum from "./pages/admin/course-curriculums/CreateCourseCurriculum.jsx";
+import EditCourseCurriculum from "./pages/admin/course-curriculums/EditCourseCurriculum.jsx";
 
 function App() {
   const dispatch = useDispatch();
@@ -109,6 +112,18 @@ function App() {
             <Route path="/admin/faculties/:id/edit" element={<EditFaculty />} />
             <Route path="/admin/courses/create" element={<CreateCourse />} />
             <Route path="/admin/courses/:id/edit" element={<EditCourse />} />
+            <Route
+              path="/admin/courses/:courseId/curriculums"
+              element={<CourseCurriculums />}
+            />
+            <Route
+              path="/admin/courses/:courseId/curriculums/create"
+              element={<CreateCourseCurriculum />}
+            />
+            <Route
+              path="/admin/course-curriculums/:id/edit"
+              element={<EditCourseCurriculum />}
+            />
             <Route path="/admin/certificates/create" element={<CreateCertificate />} />
             <Route path="/admin/certificates/:id/edit" element={<EditCertificate />} />
           </Route>
