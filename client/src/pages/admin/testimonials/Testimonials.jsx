@@ -3,9 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   Eye,
   MessageSquareQuote,
+  Pencil,
   Plus,
   Quote,
-  Search,
   Star,
   Trash2,
   User2,
@@ -47,7 +47,8 @@ const Testimonials = () => {
 
       return (
         testimonial.name?.toLowerCase().includes(searchText) ||
-        testimonial.designation?.toLowerCase().includes(searchText) ||
+        testimonial.role?.toLowerCase().includes(searchText) ||
+        testimonial.course?.toLowerCase().includes(searchText) ||
         testimonial.message?.toLowerCase().includes(searchText)
       );
     });
@@ -64,9 +65,17 @@ const Testimonials = () => {
         (testimonial) => testimonial.status === false,
       ).length,
 
-      featured: testimonials.filter(
-        (testimonial) => testimonial.featured === true,
-      ).length,
+      averageRating:
+        testimonials.length > 0
+          ? Math.round(
+              (testimonials.reduce(
+                (sum, testimonial) => sum + (Number(testimonial.rating) || 0),
+                0,
+              ) /
+                testimonials.length) *
+                10,
+            ) / 10
+          : 0,
     };
   }, [testimonials]);
 
@@ -100,7 +109,7 @@ const Testimonials = () => {
           icon={MessageSquareQuote}
         />
 
-        <StatCard title="Featured" value={stats.featured} icon={Star} />
+        <StatCard title="Average Rating" value={stats.averageRating} icon={Star} />
 
         <StatCard title="Active" value={stats.active} icon={Quote} />
 
@@ -109,7 +118,7 @@ const Testimonials = () => {
 
       <SearchSection
         title="Search Testimonials"
-        description="Find testimonials by student name, role or content."
+        description="Find testimonials by name, role, course or message."
         search={search}
         setSearch={setSearch}
         placeholder="Search testimonials..."
@@ -131,11 +140,13 @@ const Testimonials = () => {
               <tr>
                 <th className="px-5 py-4">Student</th>
 
-                <th className="px-5 py-4">Designation</th>
+                <th className="px-5 py-4">Role</th>
+
+                <th className="px-5 py-4">Course</th>
 
                 <th className="px-5 py-4">Message</th>
 
-                <th className="px-5 py-4">Featured</th>
+                <th className="px-5 py-4">Rating</th>
 
                 <th className="px-5 py-4">Status</th>
 
@@ -187,13 +198,13 @@ const Testimonials = () => {
                     <td className="px-5 py-4">
                       <div>
                         <p className="font-medium text-foreground">
-                          {testimonial.designation}
-                        </p>
-
-                        <p className="mt-1 text-xs text-muted-foreground">
-                          Axis University
+                          {testimonial.role || "-"}
                         </p>
                       </div>
+                    </td>
+
+                    <td className="px-5 py-4 text-muted-foreground">
+                      {testimonial.course}
                     </td>
 
                     <td className="px-5 py-4">
@@ -203,7 +214,7 @@ const Testimonials = () => {
                     </td>
 
                     <td className="px-5 py-4">
-                      <FeaturedBadge featured={testimonial.featured} />
+                      <RatingBadge rating={testimonial.rating} />
                     </td>
 
                     <td className="px-5 py-4">
@@ -222,6 +233,14 @@ const Testimonials = () => {
                           className="inline-flex h-9 w-9 items-center justify-center rounded-full border bg-card text-foreground transition-smooth hover:bg-secondary"
                         >
                           <Eye className="h-4 w-4" />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/admin/testimonials/${testimonial.id}/edit`)}
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-full border bg-card text-foreground transition-smooth hover:bg-secondary"
+                        >
+                          <Pencil className="h-4 w-4" />
                         </button>
 
                         <button
@@ -288,6 +307,14 @@ const FeaturedBadge = ({ featured }) => {
   );
 };
 
+const RatingBadge = ({ rating }) => {
+  return (
+    <span className="inline-flex rounded-full border border-border bg-secondary px-2.5 py-1 text-xs font-semibold text-foreground">
+      {rating ? `${rating}/5` : "-"}
+    </span>
+  );
+};
+
 const DetailCard = ({ label, value }) => {
   return (
     <div className="rounded-2xl border bg-background p-4">
@@ -344,13 +371,13 @@ const TestimonialDetailsModal = ({ testimonial, onClose }) => {
               <h3 className="mt-6 text-2xl font-bold">{testimonial.name}</h3>
 
               <p className="mt-2 text-primary-foreground/80">
-                {testimonial.designation}
+                {testimonial.role || "-"}
               </p>
 
               <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
                 <StatusBadge status={testimonial.status} />
 
-                <FeaturedBadge featured={testimonial.featured} />
+                <RatingBadge rating={testimonial.rating} />
               </div>
             </div>
 
@@ -371,12 +398,11 @@ const TestimonialDetailsModal = ({ testimonial, onClose }) => {
             <div className="grid gap-4 md:grid-cols-2">
               <DetailCard label="Full Name" value={testimonial.name} />
 
-              <DetailCard label="Designation" value={testimonial.designation} />
+              <DetailCard label="Role" value={testimonial.role} />
 
-              <DetailCard
-                label="Featured"
-                value={testimonial.featured ? "Yes" : "No"}
-              />
+              <DetailCard label="Course" value={testimonial.course} />
+
+              <DetailCard label="Rating" value={testimonial.rating ? `${testimonial.rating}/5` : "-"} />
 
               <DetailCard
                 label="Status"

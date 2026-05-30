@@ -33,6 +33,8 @@ import Downloads from "./pages/admin/downloads/Downloads.jsx";
 import CreateDownload from "./pages/admin/downloads/CreateDownload.jsx";
 import EditDownload from "./pages/admin/downloads/EditDownload.jsx";
 import Testimonials from "./pages/admin/testimonials/Testimonials.jsx";
+import CreateTestimonial from "./pages/admin/testimonials/CreateTestimonial.jsx";
+import EditTestimonial from "./pages/admin/testimonials/EditTestimonial.jsx";
 import RecognitionsAdmin from "./pages/admin/recognitions/Recognitions.jsx";
 import Messages from "./pages/admin/Messages.jsx";
 import NewsletterSubscriptions from "./pages/admin/NewsletterSubscriptions.jsx";
@@ -96,6 +98,8 @@ function App() {
             <Route path="/admin/downloads/create" element={<CreateDownload />} />
             <Route path="/admin/downloads/:id/edit" element={<EditDownload />} />
             <Route path="/admin/testimonials" element={<Testimonials />} />
+            <Route path="/admin/testimonials/create" element={<CreateTestimonial />} />
+            <Route path="/admin/testimonials/:id/edit" element={<EditTestimonial />} />
             <Route path="/admin/recognitions" element={<RecognitionsAdmin />} />
             <Route path="/admin/messages" element={<Messages />} />
             <Route
