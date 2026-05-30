@@ -74,6 +74,7 @@ Route::middleware(['auth:api'])->group(function () {
 
         // Admin only
         Route::apiResource('/students', StudentController::class);
+        Route::get('/enrollments/{enrollment}/edit-data', [EnrollmentController::class, 'editData']);
         Route::apiResource('/enrollments', EnrollmentController::class);
 
         // Admin newsletter subscription management

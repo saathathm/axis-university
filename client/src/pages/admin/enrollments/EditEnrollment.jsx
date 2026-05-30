@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import CreateEnrollment from "./CreateEnrollment";
-import { getEnrollmentDetails } from "../../../features/enrollment/enrollmentActions";
+import { getEnrollmentEditData } from "../../../features/enrollment/enrollmentActions";
 import LoadingSpinner from "../../../components/widgets/LoadingSpinner";
 
 const EditEnrollment = () => {
@@ -10,19 +10,26 @@ const EditEnrollment = () => {
 
   const { id } = useParams();
 
-  const { enrollment = null } = useSelector(
+  const { enrollmentEditData = null } = useSelector(
     (state) => state.enrollmentState,
   );
 
   useEffect(() => {
-    dispatch(getEnrollmentDetails(id));
+    dispatch(getEnrollmentEditData(id));
   }, [dispatch, id]);
 
-  if (!enrollment?.id) {
+  if (!enrollmentEditData?.enrollment?.id) {
     return <LoadingSpinner />;
   }
 
-  return <CreateEnrollment enrollment={enrollment} isEdit />;
+  return (
+    <CreateEnrollment
+      enrollment={enrollmentEditData.enrollment}
+      students={enrollmentEditData.students}
+      courses={enrollmentEditData.courses}
+      isEdit
+    />
+  );
 };
 
 export default EditEnrollment;

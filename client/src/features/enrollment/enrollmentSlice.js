@@ -7,6 +7,7 @@ const enrollmentSlice = createSlice({
     loading: false,
     enrollments: [],
     enrollment: null,
+    enrollmentEditData: null,
   },
 
   reducers: {
@@ -49,6 +50,29 @@ const enrollmentSlice = createSlice({
     },
 
     getEnrollmentDetailsFailure(state, actions) {
+      return {
+        ...state,
+        error: actions.payload,
+        loading: false,
+      };
+    },
+
+    getEnrollmentEditDataRequest(state, actions) {
+      return {
+        ...state,
+        loading: true,
+      };
+    },
+
+    getEnrollmentEditDataSuccess(state, actions) {
+      return {
+        ...state,
+        enrollmentEditData: actions.payload,
+        loading: false,
+      };
+    },
+
+    getEnrollmentEditDataFailure(state, actions) {
       return {
         ...state,
         error: actions.payload,
@@ -129,6 +153,7 @@ const enrollmentSlice = createSlice({
       return {
         ...state,
         enrollment: null,
+        enrollmentEditData: null,
       };
     },
 
@@ -155,6 +180,9 @@ export const {
   getEnrollmentDetailsRequest,
   getEnrollmentDetailsSuccess,
   getEnrollmentDetailsFailure,
+  getEnrollmentEditDataRequest,
+  getEnrollmentEditDataSuccess,
+  getEnrollmentEditDataFailure,
   createEnrollmentRequest,
   createEnrollmentSuccess,
   createEnrollmentFailure,

@@ -7,6 +7,9 @@ import {
   getEnrollmentDetailsRequest,
   getEnrollmentDetailsSuccess,
   getEnrollmentDetailsFailure,
+  getEnrollmentEditDataRequest,
+  getEnrollmentEditDataSuccess,
+  getEnrollmentEditDataFailure,
   createEnrollmentRequest,
   createEnrollmentSuccess,
   createEnrollmentFailure,
@@ -50,6 +53,26 @@ export const getEnrollmentDetails =
         getEnrollmentDetailsFailure(
           error.response?.data?.message ||
             "Failed to fetch enrollment details",
+        ),
+      );
+    }
+  };
+
+export const getEnrollmentEditData =
+  (enrollmentId) => async (dispatch) => {
+    try {
+      dispatch(getEnrollmentEditDataRequest());
+
+      const { data } = await axiosInstance.get(
+        `/api/enrollments/${enrollmentId}/edit-data`,
+      );
+
+      dispatch(getEnrollmentEditDataSuccess(data.data));
+    } catch (error) {
+      dispatch(
+        getEnrollmentEditDataFailure(
+          error.response?.data?.message ||
+            "Failed to fetch enrollment edit data",
         ),
       );
     }

@@ -12,13 +12,26 @@ import {
 import { getStudents } from "../../../features/student/studentActions";
 import SearchableSelect from "../../../components/widgets/SearchableSelect";
 
-const CreateEnrollment = ({ enrollment = null, isEdit = false }) => {
+const CreateEnrollment = ({
+  enrollment = null,
+  students: studentsProp = null,
+  courses: coursesProp = null,
+  isEdit = false,
+}) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { students = [] } = useSelector((state) => state.studentState);
+  const { students: storedStudents = [] } = useSelector(
+    (state) => state.studentState,
+  );
 
-  const { courses = [] } = useSelector((state) => state.courseState);
+  const { courses: storedCourses = [] } = useSelector(
+    (state) => state.courseState,
+  );
+
+  const students = studentsProp ?? storedStudents;
+
+  const courses = coursesProp ?? storedCourses;
 
   const [formData, setFormData] = useState({
     studentId: "",
@@ -37,10 +50,14 @@ const CreateEnrollment = ({ enrollment = null, isEdit = false }) => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    dispatch(getCourses());
+    if (!studentsProp) {
+      dispatch(getStudents());
+    }
 
-    dispatch(getStudents());
-  }, [dispatch]);
+    if (!coursesProp) {
+      dispatch(getCourses());
+    }
+  }, [dispatch, coursesProp, studentsProp]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;

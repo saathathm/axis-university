@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Student;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -66,6 +68,20 @@ class EnrollmentController extends Controller
         $enrollment->load('student', 'course.faculty', 'application', 'certificate');
 
         return $this->successResponse($enrollment, 'Enrollment fetched successfully');
+    }
+
+    public function editData(Enrollment $enrollment)
+    {
+        $enrollment->load('student', 'course.faculty', 'application', 'certificate');
+
+        $students = Student::latest()->get();
+        $courses = Course::with('faculty')->latest()->get();
+
+        return $this->successResponse([
+            'enrollment' => $enrollment,
+            'students' => $students,
+            'courses' => $courses,
+        ], 'Enrollment edit data fetched successfully');
     }
 
     public function update(Request $request, Enrollment $enrollment)
