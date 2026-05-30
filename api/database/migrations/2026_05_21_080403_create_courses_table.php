@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('level')->nullable();
             $table->string('duration')->nullable();
             $table->enum('study_mode', ['online', 'physical', 'hybrid'])->default('online');
-            $table->decimal('fee', 10, 2)->nullable();
+            $table->integer('students_intake', 10, 2)->nullable();
             $table->text('short_description')->nullable();
             $table->longText('description')->nullable();
             $table->text('entry_requirements')->nullable();

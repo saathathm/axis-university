@@ -17,7 +17,7 @@ class Course extends Model
         'level',
         'duration',
         'study_mode',
-        'fee',
+        'students_intake',
         'short_description',
         'description',
         'entry_requirements',
@@ -25,7 +25,7 @@ class Course extends Model
     ];
 
     protected $casts = [
-        'fee' => 'decimal:2',
+        'students_intake' => 'integer',
         'status' => 'boolean',
     ];
 

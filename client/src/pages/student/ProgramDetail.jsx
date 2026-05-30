@@ -179,8 +179,12 @@ const ProgramDetail = () => {
                 />
               )}
 
-              {program.fee && (
-                <FeatureItem icon={Users} label="Fee" value={program.fee} />
+              {program.students_intake && (
+                <FeatureItem
+                  icon={Users}
+                  label="Students Intake"
+                  value={program.students_intake}
+                />
               )}
             </dl>
 

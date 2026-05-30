@@ -39,7 +39,7 @@ const CreateCourse = ({ course = null, isEdit = false }) => {
 
     studyMode: course?.study_mode || "",
 
-    fee: course?.fee || "",
+    students_intake: course?.students_intake || "",
 
     shortDescription: course?.short_description || "",
 
@@ -69,7 +69,7 @@ const CreateCourse = ({ course = null, isEdit = false }) => {
 
         studyMode: course.study_mode || "",
 
-        fee: course.fee || "",
+        students_intake: course.students_intake || "",
 
         shortDescription: course.short_description || "",
 
@@ -112,7 +112,7 @@ const CreateCourse = ({ course = null, isEdit = false }) => {
 
         studyMode: formData.studyMode,
 
-        fee: formData.fee,
+        students_intake: formData.students_intake,
 
         shortDescription: formData.shortDescription,
 
@@ -266,9 +266,9 @@ const CreateCourse = ({ course = null, isEdit = false }) => {
           />
 
           <FormInput
-            label="Tuition Fee"
-            name="fee"
-            value={Number(formData.fee)}
+            label="Students Intake"
+            name="students_intake"
+            value={Number(formData.students_intake)}
             onChange={handleChange}
           />
 

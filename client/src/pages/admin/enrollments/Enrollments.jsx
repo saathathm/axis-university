@@ -154,7 +154,7 @@ const Enrollments = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1100px] text-left text-sm">
+          <table className="w-full min-w-[968px] text-left text-sm">
             <thead className="bg-secondary/60 text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
                 <th className="px-5 py-4">Enrollment</th>

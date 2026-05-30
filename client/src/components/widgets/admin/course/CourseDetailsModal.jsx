@@ -47,9 +47,9 @@ const CourseDetailsModal = ({ course, onClose, onClick = () => {} }) => {
               <InfoCard label="Study Mode" value={course.study_mode} />
 
               <InfoCard
-                label="Tuition Fee"
+                label="Students Intake"
                 value={
-                  course.fee ? `${Number(course.fee).toLocaleString()}` : "-"
+                  course.students_intake ? `${course.students_intake}` : "-"
                 }
               />
             </div>
